@@ -15,6 +15,7 @@ workflows:
       - name: Install npm dependencies
         script: |
           npm install
+          npm install --save-dev @tailwindcss/oxide-darwin-arm64
       - name: Build web project
         script: |
           npm run build
