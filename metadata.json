@@ -1,0 +1,6 @@
+{
+  "name": "LedgerPro",
+  "description": "A professional mobile-first double-entry accounting application for managing multiple companies, accounts, and financial journals with real-time balance sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
