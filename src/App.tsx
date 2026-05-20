@@ -1779,9 +1779,15 @@ export default function App() {
                <p className="text-[var(--text-bright)] font-bold">No businesses found</p>
                <p className="text-sm text-[var(--muted)]">Create your first company to start bookkeeping.</p>
             </div>
-            <button onClick={() => setShowModal('new_company')} className="btn-primary mx-auto">
-               <Plus size={20} /> Add Business
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <button onClick={() => setShowModal('new_company')} className="btn-primary">
+                 <Plus size={20} /> Add Business
+              </button>
+              <label className="btn-secondary cursor-pointer">
+                 <Upload size={20} /> Import Database
+                 <input type="file" accept=".json" onChange={importData} className="hidden" />
+              </label>
+            </div>
           </div>
         )}
       </div>
