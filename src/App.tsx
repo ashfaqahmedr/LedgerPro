@@ -2916,6 +2916,13 @@ export default function App() {
               <span className="text-[10px] font-black uppercase hidden sm:inline">Back</span>
             </button>
           )}
+          <button 
+            onClick={() => setShowModal('settings')}
+            className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-[var(--text-bright)] transition-colors flex items-center gap-1.5"
+            title="Settings"
+          >
+            <Settings size={16} />
+          </button>
         </div>
       </header>
 
