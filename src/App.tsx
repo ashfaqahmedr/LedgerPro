@@ -1779,9 +1779,15 @@ export default function App() {
                <p className="text-[var(--text-bright)] font-bold">No businesses found</p>
                <p className="text-sm text-[var(--muted)]">Create your first company to start bookkeeping.</p>
             </div>
-            <button onClick={() => setShowModal('new_company')} className="btn-primary mx-auto">
-               <Plus size={20} /> Add Business
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <button onClick={() => setShowModal('new_company')} className="btn-primary">
+                 <Plus size={20} /> Add Business
+              </button>
+              <label className="btn-secondary cursor-pointer">
+                 <Upload size={20} /> Import Database
+                 <input type="file" accept=".json" onChange={importData} className="hidden" />
+              </label>
+            </div>
           </div>
         )}
       </div>
@@ -2621,9 +2627,14 @@ export default function App() {
               {/* Factory Reset */}
               <div className="pt-4 border-t border-[var(--border)]">
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm("CRITICAL: Wipe EVERYTHING?")) {
                       localStorage.clear();
+                      try {
+                        await saveAppData({ companies: [], nextId: 1 });
+                      } catch (err) {
+                        console.error("Failed to clear app data:", err);
+                      }
                       window.location.reload();
                     }
                   }}
@@ -2916,6 +2927,13 @@ export default function App() {
               <span className="text-[10px] font-black uppercase hidden sm:inline">Back</span>
             </button>
           )}
+          <button 
+            onClick={() => setShowModal('settings')}
+            className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-[var(--text-bright)] transition-colors flex items-center gap-1.5"
+            title="Settings"
+          >
+            <Settings size={16} />
+          </button>
         </div>
       </header>
 
