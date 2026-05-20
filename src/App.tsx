@@ -911,14 +911,41 @@ const JournalEntryModal = ({
           <div className="text-[9px] font-black uppercase text-[var(--muted)] ml-2">
             {items.length} Lines
           </div>
-          <button 
-            type="button"
-            onClick={handleOpenAddLine}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-blue-500/20 active:scale-95"
-          >
-            <Plus size={14} />
-            Add Line
-          </button>
+          <div className="flex items-center gap-2">
+            {items.length > 0 && (
+              <button 
+                type="button"
+                onClick={() => {
+                  const reversedItems = items.map((item: any) => {
+                    const isDebit = item.type === 'debit';
+                    return {
+                      ...item,
+                      type: isDebit ? 'credit' : 'debit',
+                      debit: isDebit ? '0' : item.credit,
+                      credit: isDebit ? item.debit : '0',
+                    };
+                  });
+                  setFormData({
+                    ...formData,
+                    items: reversedItems
+                  });
+                }}
+                className="px-2.5 py-1.5 text-blue-400 hover:text-blue-300 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/15 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 active:scale-95"
+                title="Swap debits and credits for all lines"
+              >
+                <ArrowUpDown size={12} />
+                Reverse DR/CR Lines
+              </button>
+            )}
+            <button 
+              type="button"
+              onClick={handleOpenAddLine}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-blue-500/20 active:scale-95"
+            >
+              <Plus size={14} />
+              Add Line
+            </button>
+          </div>
         </div>
 
         {/* Lines Table */}
@@ -1132,6 +1159,24 @@ const SingleEntryModal = ({
             onChange={(val: string) => setFormData({ ...formData, creditAccountId: val })}
             onAddClick={() => { setPreviousModal('new_entry_single'); setFormData({...formData, accountSourceField: 'creditAccountId'}); setShowModal('new_account'); }}
           />
+        </div>
+
+        <div className="flex justify-end pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              setFormData({
+                ...formData,
+                debitAccountId: formData.creditAccountId || "",
+                creditAccountId: formData.debitAccountId || ""
+              });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase text-blue-400 hover:text-blue-300 bg-blue-500/0 hover:bg-blue-500/5 border border-blue-500/10 rounded-xl transition-all active:scale-95"
+            title="Swap Debit and Credit Accounts"
+          >
+            <ArrowUpDown size={12} />
+            Reverse DR/CR (Swap Accounts)
+          </button>
         </div>
 
         <div className="space-y-1.5">
@@ -1779,15 +1824,9 @@ export default function App() {
                <p className="text-[var(--text-bright)] font-bold">No businesses found</p>
                <p className="text-sm text-[var(--muted)]">Create your first company to start bookkeeping.</p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <button onClick={() => setShowModal('new_company')} className="btn-primary">
-                 <Plus size={20} /> Add Business
-              </button>
-              <label className="btn-secondary cursor-pointer">
-                 <Upload size={20} /> Import Database
-                 <input type="file" accept=".json" onChange={importData} className="hidden" />
-              </label>
-            </div>
+            <button onClick={() => setShowModal('new_company')} className="btn-primary mx-auto">
+               <Plus size={20} /> Add Business
+            </button>
           </div>
         )}
       </div>
@@ -1844,6 +1883,48 @@ export default function App() {
     });
     
     setShowModal('edit_entry');
+  };
+
+  const handleCreateReversal = (txId: number) => {
+    if (!activeCompany) return;
+    const txnItems: any[] = [];
+    let txnDate = formatDate(new Date()); // Default reversal to today's date
+    let txnRef = "";
+    let desc = "";
+
+    activeCompany.accounts.forEach(acc => {
+      acc.entries.filter(e => e.transactionId === txId).forEach(e => {
+        txnRef = e.reference ? `REV-${e.reference}` : "REV-ENTRY";
+        desc = e.description ? `Reversal of: ${e.description}` : "Reversal Entry";
+
+        // Reverse Debit <-> Credit
+        const reversedType = e.type === 'debit' ? 'credit' : 'debit';
+
+        txnItems.push({
+          id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          accountId: acc.id.toString(),
+          detail: e.description ? `Reversal of: ${e.description}` : "Reversal Line",
+          ref: e.reference ? `REV-${e.reference}` : "REV-LINE",
+          debit: reversedType === 'debit' ? e.amount.toString() : '0',
+          credit: reversedType === 'credit' ? e.amount.toString() : '0',
+          type: reversedType
+        });
+      });
+    });
+
+    setFormData({
+      date: txnDate,
+      transactionRef: txnRef,
+      items: txnItems,
+      debitAccountId: "",
+      creditAccountId: "",
+      amount: "",
+      description: desc,
+      reference: txnRef
+    });
+    
+    setShowModal('new_entry');
+    notify("Reversal entry prepared. Review and post to record.");
   };
 
   const renderDashboard = () => {
@@ -1989,6 +2070,7 @@ export default function App() {
                     </div>
                     <EllipsisMenu options={[
                        { label: 'Edit', icon: Edit3, onClick: () => handleEditTransaction(entry.transactionId) },
+                       { label: 'Reverse Entry', icon: ArrowUpDown, onClick: () => handleCreateReversal(entry.transactionId) },
                        { label: 'Delete', icon: Trash2, onClick: () => { setTransactionToDelete(entry.transactionId); setShowModal('delete_confirm'); }, danger: true }
                     ]} />
                   </div>
@@ -2276,6 +2358,7 @@ export default function App() {
                     <span className="text-[10px] font-black text-[var(--muted)] tracking-tighter uppercase">Balance: {formatCurrency(entry.runningBalance)}</span>
                     <EllipsisMenu options={[
                       { label: 'Edit', icon: Edit3, onClick: () => handleEditTransaction(entry.transactionId) },
+                      { label: 'Reverse Entry', icon: ArrowUpDown, onClick: () => handleCreateReversal(entry.transactionId) },
                       { label: 'Delete', icon: Trash2, onClick: () => { setTransactionToDelete(entry.transactionId); setShowModal('delete_confirm'); }, danger: true }
                     ]} />
                   </div>
@@ -2627,14 +2710,9 @@ export default function App() {
               {/* Factory Reset */}
               <div className="pt-4 border-t border-[var(--border)]">
                 <button 
-                  onClick={async () => {
+                  onClick={() => {
                     if (window.confirm("CRITICAL: Wipe EVERYTHING?")) {
                       localStorage.clear();
-                      try {
-                        await saveAppData({ companies: [], nextId: 1 });
-                      } catch (err) {
-                        console.error("Failed to clear app data:", err);
-                      }
                       window.location.reload();
                     }
                   }}
@@ -2927,13 +3005,6 @@ export default function App() {
               <span className="text-[10px] font-black uppercase hidden sm:inline">Back</span>
             </button>
           )}
-          <button 
-            onClick={() => setShowModal('settings')}
-            className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-[var(--text-bright)] transition-colors flex items-center gap-1.5"
-            title="Settings"
-          >
-            <Settings size={16} />
-          </button>
         </div>
       </header>
 
