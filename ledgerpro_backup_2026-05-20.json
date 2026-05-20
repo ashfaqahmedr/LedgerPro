@@ -1,0 +1,2725 @@
+{
+  "companies": [
+    {
+      "id": 1,
+      "name": "Hussaini Logistics",
+      "industry": "Transport",
+      "currency": "PKR",
+      "createdAt": "2026-05-01T00:00:00.000Z",
+      "accounts": [
+        {
+          "id": 10,
+          "name": "Cash and Bank",
+          "code": "1001",
+          "type": "asset",
+          "description": "Primary checking account",
+          "openingBalance": 10000,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 21,
+              "transactionId": 20,
+              "date": "2026-05-05",
+              "description": "Consulting Services Payment",
+              "type": "debit",
+              "amount": 5000,
+              "reference": "INV-100",
+              "contraAccountId": 14
+            },
+            {
+              "id": 25,
+              "transactionId": 23,
+              "date": "2026-05-10",
+              "description": "Office Rent for May",
+              "type": "credit",
+              "amount": 1000,
+              "reference": "CHK-001",
+              "contraAccountId": 15
+            },
+            {
+              "id": 203,
+              "transactionId": 101,
+              "date": "2026-05-15",
+              "description": "Utility payment month ref 1",
+              "type": "credit",
+              "amount": 391,
+              "reference": "UTIL-100",
+              "contraAccountId": 15
+            },
+            {
+              "id": 206,
+              "transactionId": 103,
+              "date": "2026-05-15",
+              "description": "Capital contribution batch 1",
+              "type": "debit",
+              "amount": 2668,
+              "reference": "CAP-400",
+              "contraAccountId": 13
+            },
+            {
+              "id": 211,
+              "transactionId": 105,
+              "date": "2026-05-15",
+              "description": "Utility payment month ref 2",
+              "type": "credit",
+              "amount": 448,
+              "reference": "UTIL-101",
+              "contraAccountId": 15
+            },
+            {
+              "id": 214,
+              "transactionId": 107,
+              "date": "2026-05-15",
+              "description": "Capital contribution batch 2",
+              "type": "debit",
+              "amount": 3280,
+              "reference": "CAP-401",
+              "contraAccountId": 13
+            },
+            {
+              "id": 216,
+              "transactionId": 108,
+              "date": "2026-05-16",
+              "description": "Received payment for INV-200",
+              "type": "debit",
+              "amount": 2848,
+              "reference": "REC-100",
+              "contraAccountId": 11
+            },
+            {
+              "id": 218,
+              "transactionId": 109,
+              "date": "2026-05-16",
+              "description": "Received payment for INV-201",
+              "type": "debit",
+              "amount": 2119,
+              "reference": "REC-101",
+              "contraAccountId": 11
+            },
+            {
+              "id": 223,
+              "transactionId": 111,
+              "date": "2026-05-16",
+              "description": "Utility payment month ref 3",
+              "type": "credit",
+              "amount": 396,
+              "reference": "UTIL-102",
+              "contraAccountId": 15
+            },
+            {
+              "id": 226,
+              "transactionId": 113,
+              "date": "2026-05-16",
+              "description": "Capital contribution batch 3",
+              "type": "debit",
+              "amount": 2796,
+              "reference": "CAP-402",
+              "contraAccountId": 13
+            },
+            {
+              "id": 231,
+              "transactionId": 115,
+              "date": "2026-05-16",
+              "description": "Utility payment month ref 4",
+              "type": "credit",
+              "amount": 230,
+              "reference": "UTIL-103",
+              "contraAccountId": 15
+            },
+            {
+              "id": 234,
+              "transactionId": 117,
+              "date": "2026-05-16",
+              "description": "Capital contribution batch 4",
+              "type": "debit",
+              "amount": 3526,
+              "reference": "CAP-403",
+              "contraAccountId": 13
+            },
+            {
+              "id": 237,
+              "transactionId": 118,
+              "date": "2026-05-17",
+              "description": "Settled BILL-200 with supplier",
+              "type": "credit",
+              "amount": 880,
+              "reference": "VND-300",
+              "contraAccountId": 12
+            },
+            {
+              "id": 239,
+              "transactionId": 119,
+              "date": "2026-05-17",
+              "description": "Settled BILL-201 with supplier",
+              "type": "credit",
+              "amount": 231,
+              "reference": "VND-301",
+              "contraAccountId": 12
+            },
+            {
+              "id": 240,
+              "transactionId": 120,
+              "date": "2026-05-17",
+              "description": "Received payment for INV-202",
+              "type": "debit",
+              "amount": 2959,
+              "reference": "REC-102",
+              "contraAccountId": 11
+            },
+            {
+              "id": 242,
+              "transactionId": 121,
+              "date": "2026-05-17",
+              "description": "Received payment for INV-203",
+              "type": "debit",
+              "amount": 2550,
+              "reference": "REC-103",
+              "contraAccountId": 11
+            },
+            {
+              "id": 247,
+              "transactionId": 123,
+              "date": "2026-05-17",
+              "description": "Utility payment month ref 5",
+              "type": "credit",
+              "amount": 403,
+              "reference": "UTIL-104",
+              "contraAccountId": 15
+            },
+            {
+              "id": 250,
+              "transactionId": 125,
+              "date": "2026-05-17",
+              "description": "Capital contribution batch 5",
+              "type": "debit",
+              "amount": 2654,
+              "reference": "CAP-404",
+              "contraAccountId": 13
+            },
+            {
+              "id": 255,
+              "transactionId": 127,
+              "date": "2026-05-17",
+              "description": "Utility payment month ref 6",
+              "type": "credit",
+              "amount": 166,
+              "reference": "UTIL-105",
+              "contraAccountId": 15
+            },
+            {
+              "id": 258,
+              "transactionId": 129,
+              "date": "2026-05-17",
+              "description": "Capital contribution batch 6",
+              "type": "debit",
+              "amount": 3591,
+              "reference": "CAP-405",
+              "contraAccountId": 13
+            },
+            {
+              "id": 261,
+              "transactionId": 130,
+              "date": "2026-05-18",
+              "description": "Settled BILL-202 with supplier",
+              "type": "credit",
+              "amount": 816,
+              "reference": "VND-302",
+              "contraAccountId": 12
+            },
+            {
+              "id": 263,
+              "transactionId": 131,
+              "date": "2026-05-18",
+              "description": "Settled BILL-203 with supplier",
+              "type": "credit",
+              "amount": 205,
+              "reference": "VND-303",
+              "contraAccountId": 12
+            },
+            {
+              "id": 264,
+              "transactionId": 132,
+              "date": "2026-05-18",
+              "description": "Received payment for INV-204",
+              "type": "debit",
+              "amount": 1076,
+              "reference": "REC-104",
+              "contraAccountId": 11
+            },
+            {
+              "id": 266,
+              "transactionId": 133,
+              "date": "2026-05-18",
+              "description": "Received payment for INV-205",
+              "type": "debit",
+              "amount": 2132,
+              "reference": "REC-105",
+              "contraAccountId": 11
+            },
+            {
+              "id": 271,
+              "transactionId": 135,
+              "date": "2026-05-18",
+              "description": "Utility payment month ref 7",
+              "type": "credit",
+              "amount": 355,
+              "reference": "UTIL-106",
+              "contraAccountId": 15
+            },
+            {
+              "id": 274,
+              "transactionId": 137,
+              "date": "2026-05-18",
+              "description": "Capital contribution batch 7",
+              "type": "debit",
+              "amount": 2931,
+              "reference": "CAP-406",
+              "contraAccountId": 13
+            },
+            {
+              "id": 279,
+              "transactionId": 139,
+              "date": "2026-05-18",
+              "description": "Utility payment month ref 8",
+              "type": "credit",
+              "amount": 225,
+              "reference": "UTIL-107",
+              "contraAccountId": 15
+            },
+            {
+              "id": 282,
+              "transactionId": 141,
+              "date": "2026-05-18",
+              "description": "Capital contribution batch 8",
+              "type": "debit",
+              "amount": 2285,
+              "reference": "CAP-407",
+              "contraAccountId": 13
+            },
+            {
+              "id": 285,
+              "transactionId": 142,
+              "date": "2026-05-19",
+              "description": "Settled BILL-204 with supplier",
+              "type": "credit",
+              "amount": 343,
+              "reference": "VND-304",
+              "contraAccountId": 12
+            },
+            {
+              "id": 287,
+              "transactionId": 143,
+              "date": "2026-05-19",
+              "description": "Settled BILL-205 with supplier",
+              "type": "credit",
+              "amount": 579,
+              "reference": "VND-305",
+              "contraAccountId": 12
+            },
+            {
+              "id": 288,
+              "transactionId": 144,
+              "date": "2026-05-19",
+              "description": "Received payment for INV-206",
+              "type": "debit",
+              "amount": 2948,
+              "reference": "REC-106",
+              "contraAccountId": 11
+            },
+            {
+              "id": 290,
+              "transactionId": 145,
+              "date": "2026-05-19",
+              "description": "Received payment for INV-207",
+              "type": "debit",
+              "amount": 1199,
+              "reference": "REC-107",
+              "contraAccountId": 11
+            },
+            {
+              "id": 295,
+              "transactionId": 147,
+              "date": "2026-05-19",
+              "description": "Utility payment month ref 9",
+              "type": "credit",
+              "amount": 247,
+              "reference": "UTIL-108",
+              "contraAccountId": 15
+            },
+            {
+              "id": 298,
+              "transactionId": 149,
+              "date": "2026-05-19",
+              "description": "Capital contribution batch 9",
+              "type": "debit",
+              "amount": 4978,
+              "reference": "CAP-408",
+              "contraAccountId": 13
+            },
+            {
+              "id": 303,
+              "transactionId": 151,
+              "date": "2026-05-19",
+              "description": "Utility payment month ref 10",
+              "type": "credit",
+              "amount": 410,
+              "reference": "UTIL-109",
+              "contraAccountId": 15
+            },
+            {
+              "id": 306,
+              "transactionId": 153,
+              "date": "2026-05-19",
+              "description": "Capital contribution batch 10",
+              "type": "debit",
+              "amount": 2366,
+              "reference": "CAP-409",
+              "contraAccountId": 13
+            },
+            {
+              "id": 309,
+              "transactionId": 154,
+              "date": "2026-05-20",
+              "description": "Settled BILL-206 with supplier",
+              "type": "credit",
+              "amount": 677,
+              "reference": "VND-306",
+              "contraAccountId": 12
+            },
+            {
+              "id": 311,
+              "transactionId": 155,
+              "date": "2026-05-20",
+              "description": "Settled BILL-207 with supplier",
+              "type": "credit",
+              "amount": 646,
+              "reference": "VND-307",
+              "contraAccountId": 12
+            },
+            {
+              "id": 312,
+              "transactionId": 156,
+              "date": "2026-05-20",
+              "description": "Received payment for INV-208",
+              "type": "debit",
+              "amount": 1983,
+              "reference": "REC-108",
+              "contraAccountId": 11
+            },
+            {
+              "id": 314,
+              "transactionId": 157,
+              "date": "2026-05-20",
+              "description": "Received payment for INV-209",
+              "type": "debit",
+              "amount": 2491,
+              "reference": "REC-109",
+              "contraAccountId": 11
+            },
+            {
+              "id": 319,
+              "transactionId": 159,
+              "date": "2026-05-20",
+              "description": "Utility payment month ref 11",
+              "type": "credit",
+              "amount": 272,
+              "reference": "UTIL-110",
+              "contraAccountId": 15
+            },
+            {
+              "id": 322,
+              "transactionId": 161,
+              "date": "2026-05-20",
+              "description": "Capital contribution batch 11",
+              "type": "debit",
+              "amount": 4468,
+              "reference": "CAP-410",
+              "contraAccountId": 13
+            },
+            {
+              "id": 327,
+              "transactionId": 163,
+              "date": "2026-05-20",
+              "description": "Utility payment month ref 12",
+              "type": "credit",
+              "amount": 415,
+              "reference": "UTIL-111",
+              "contraAccountId": 15
+            },
+            {
+              "id": 330,
+              "transactionId": 165,
+              "date": "2026-05-20",
+              "description": "Capital contribution batch 12",
+              "type": "debit",
+              "amount": 2326,
+              "reference": "CAP-411",
+              "contraAccountId": 13
+            },
+            {
+              "id": 333,
+              "transactionId": 166,
+              "date": "2026-05-21",
+              "description": "Settled BILL-208 with supplier",
+              "type": "credit",
+              "amount": 445,
+              "reference": "VND-308",
+              "contraAccountId": 12
+            },
+            {
+              "id": 335,
+              "transactionId": 167,
+              "date": "2026-05-21",
+              "description": "Settled BILL-209 with supplier",
+              "type": "credit",
+              "amount": 409,
+              "reference": "VND-309",
+              "contraAccountId": 12
+            },
+            {
+              "id": 336,
+              "transactionId": 168,
+              "date": "2026-05-21",
+              "description": "Received payment for INV-2010",
+              "type": "debit",
+              "amount": 1858,
+              "reference": "REC-1010",
+              "contraAccountId": 11
+            },
+            {
+              "id": 338,
+              "transactionId": 169,
+              "date": "2026-05-21",
+              "description": "Received payment for INV-2011",
+              "type": "debit",
+              "amount": 1889,
+              "reference": "REC-1011",
+              "contraAccountId": 11
+            },
+            {
+              "id": 343,
+              "transactionId": 171,
+              "date": "2026-05-21",
+              "description": "Utility payment month ref 13",
+              "type": "credit",
+              "amount": 210,
+              "reference": "UTIL-112",
+              "contraAccountId": 15
+            },
+            {
+              "id": 346,
+              "transactionId": 173,
+              "date": "2026-05-21",
+              "description": "Capital contribution batch 13",
+              "type": "debit",
+              "amount": 2047,
+              "reference": "CAP-412",
+              "contraAccountId": 13
+            },
+            {
+              "id": 351,
+              "transactionId": 175,
+              "date": "2026-05-21",
+              "description": "Utility payment month ref 14",
+              "type": "credit",
+              "amount": 424,
+              "reference": "UTIL-113",
+              "contraAccountId": 15
+            },
+            {
+              "id": 354,
+              "transactionId": 177,
+              "date": "2026-05-21",
+              "description": "Capital contribution batch 14",
+              "type": "debit",
+              "amount": 4317,
+              "reference": "CAP-413",
+              "contraAccountId": 13
+            },
+            {
+              "id": 357,
+              "transactionId": 178,
+              "date": "2026-05-22",
+              "description": "Settled BILL-210 with supplier",
+              "type": "credit",
+              "amount": 868,
+              "reference": "VND-310",
+              "contraAccountId": 12
+            },
+            {
+              "id": 359,
+              "transactionId": 179,
+              "date": "2026-05-22",
+              "description": "Settled BILL-211 with supplier",
+              "type": "credit",
+              "amount": 657,
+              "reference": "VND-311",
+              "contraAccountId": 12
+            },
+            {
+              "id": 360,
+              "transactionId": 180,
+              "date": "2026-05-22",
+              "description": "Received payment for INV-2012",
+              "type": "debit",
+              "amount": 2653,
+              "reference": "REC-1012",
+              "contraAccountId": 11
+            },
+            {
+              "id": 362,
+              "transactionId": 181,
+              "date": "2026-05-22",
+              "description": "Received payment for INV-2013",
+              "type": "debit",
+              "amount": 2279,
+              "reference": "REC-1013",
+              "contraAccountId": 11
+            },
+            {
+              "id": 367,
+              "transactionId": 183,
+              "date": "2026-05-22",
+              "description": "Utility payment month ref 15",
+              "type": "credit",
+              "amount": 266,
+              "reference": "UTIL-114",
+              "contraAccountId": 15
+            },
+            {
+              "id": 370,
+              "transactionId": 185,
+              "date": "2026-05-22",
+              "description": "Capital contribution batch 15",
+              "type": "debit",
+              "amount": 3070,
+              "reference": "CAP-414",
+              "contraAccountId": 13
+            },
+            {
+              "id": 375,
+              "transactionId": 187,
+              "date": "2026-05-22",
+              "description": "Utility payment month ref 16",
+              "type": "credit",
+              "amount": 266,
+              "reference": "UTIL-115",
+              "contraAccountId": 15
+            },
+            {
+              "id": 378,
+              "transactionId": 189,
+              "date": "2026-05-22",
+              "description": "Capital contribution batch 16",
+              "type": "debit",
+              "amount": 3952,
+              "reference": "CAP-415",
+              "contraAccountId": 13
+            },
+            {
+              "id": 381,
+              "transactionId": 190,
+              "date": "2026-05-23",
+              "description": "Settled BILL-212 with supplier",
+              "type": "credit",
+              "amount": 437,
+              "reference": "VND-312",
+              "contraAccountId": 12
+            },
+            {
+              "id": 383,
+              "transactionId": 191,
+              "date": "2026-05-23",
+              "description": "Settled BILL-213 with supplier",
+              "type": "credit",
+              "amount": 357,
+              "reference": "VND-313",
+              "contraAccountId": 12
+            },
+            {
+              "id": 384,
+              "transactionId": 192,
+              "date": "2026-05-23",
+              "description": "Received payment for INV-2014",
+              "type": "debit",
+              "amount": 1336,
+              "reference": "REC-1014",
+              "contraAccountId": 11
+            },
+            {
+              "id": 386,
+              "transactionId": 193,
+              "date": "2026-05-23",
+              "description": "Received payment for INV-2015",
+              "type": "debit",
+              "amount": 2707,
+              "reference": "REC-1015",
+              "contraAccountId": 11
+            },
+            {
+              "id": 391,
+              "transactionId": 195,
+              "date": "2026-05-23",
+              "description": "Utility payment month ref 17",
+              "type": "credit",
+              "amount": 347,
+              "reference": "UTIL-116",
+              "contraAccountId": 15
+            },
+            {
+              "id": 394,
+              "transactionId": 197,
+              "date": "2026-05-23",
+              "description": "Capital contribution batch 17",
+              "type": "debit",
+              "amount": 3647,
+              "reference": "CAP-416",
+              "contraAccountId": 13
+            },
+            {
+              "id": 399,
+              "transactionId": 199,
+              "date": "2026-05-23",
+              "description": "Utility payment month ref 18",
+              "type": "credit",
+              "amount": 192,
+              "reference": "UTIL-117",
+              "contraAccountId": 15
+            },
+            {
+              "id": 402,
+              "transactionId": 201,
+              "date": "2026-05-23",
+              "description": "Capital contribution batch 18",
+              "type": "debit",
+              "amount": 3539,
+              "reference": "CAP-417",
+              "contraAccountId": 13
+            },
+            {
+              "id": 405,
+              "transactionId": 202,
+              "date": "2026-05-24",
+              "description": "Settled BILL-214 with supplier",
+              "type": "credit",
+              "amount": 585,
+              "reference": "VND-314",
+              "contraAccountId": 12
+            },
+            {
+              "id": 407,
+              "transactionId": 203,
+              "date": "2026-05-24",
+              "description": "Settled BILL-215 with supplier",
+              "type": "credit",
+              "amount": 684,
+              "reference": "VND-315",
+              "contraAccountId": 12
+            },
+            {
+              "id": 408,
+              "transactionId": 204,
+              "date": "2026-05-24",
+              "description": "Received payment for INV-2016",
+              "type": "debit",
+              "amount": 2926,
+              "reference": "REC-1016",
+              "contraAccountId": 11
+            },
+            {
+              "id": 410,
+              "transactionId": 205,
+              "date": "2026-05-24",
+              "description": "Received payment for INV-2017",
+              "type": "debit",
+              "amount": 2892,
+              "reference": "REC-1017",
+              "contraAccountId": 11
+            },
+            {
+              "id": 415,
+              "transactionId": 207,
+              "date": "2026-05-24",
+              "description": "Utility payment month ref 19",
+              "type": "credit",
+              "amount": 270,
+              "reference": "UTIL-118",
+              "contraAccountId": 15
+            },
+            {
+              "id": 418,
+              "transactionId": 209,
+              "date": "2026-05-24",
+              "description": "Capital contribution batch 19",
+              "type": "debit",
+              "amount": 4284,
+              "reference": "CAP-418",
+              "contraAccountId": 13
+            },
+            {
+              "id": 423,
+              "transactionId": 211,
+              "date": "2026-05-24",
+              "description": "Utility payment month ref 20",
+              "type": "credit",
+              "amount": 326,
+              "reference": "UTIL-119",
+              "contraAccountId": 15
+            },
+            {
+              "id": 426,
+              "transactionId": 213,
+              "date": "2026-05-24",
+              "description": "Capital contribution batch 20",
+              "type": "debit",
+              "amount": 3194,
+              "reference": "CAP-419",
+              "contraAccountId": 13
+            },
+            {
+              "id": 429,
+              "transactionId": 214,
+              "date": "2026-05-25",
+              "description": "Settled BILL-216 with supplier",
+              "type": "credit",
+              "amount": 521,
+              "reference": "VND-316",
+              "contraAccountId": 12
+            },
+            {
+              "id": 431,
+              "transactionId": 215,
+              "date": "2026-05-25",
+              "description": "Settled BILL-217 with supplier",
+              "type": "credit",
+              "amount": 272,
+              "reference": "VND-317",
+              "contraAccountId": 12
+            },
+            {
+              "id": 432,
+              "transactionId": 216,
+              "date": "2026-05-25",
+              "description": "Received payment for INV-2018",
+              "type": "debit",
+              "amount": 2255,
+              "reference": "REC-1018",
+              "contraAccountId": 11
+            },
+            {
+              "id": 434,
+              "transactionId": 217,
+              "date": "2026-05-25",
+              "description": "Received payment for INV-2019",
+              "type": "debit",
+              "amount": 1541,
+              "reference": "REC-1019",
+              "contraAccountId": 11
+            },
+            {
+              "id": 437,
+              "transactionId": 218,
+              "date": "2026-05-26",
+              "description": "Settled BILL-218 with supplier",
+              "type": "credit",
+              "amount": 406,
+              "reference": "VND-318",
+              "contraAccountId": 12
+            },
+            {
+              "id": 439,
+              "transactionId": 219,
+              "date": "2026-05-26",
+              "description": "Settled BILL-219 with supplier",
+              "type": "credit",
+              "amount": 626,
+              "reference": "VND-319",
+              "contraAccountId": 12
+            },
+            {
+              "id": 540,
+              "transactionId": 540,
+              "date": "2026-05-16",
+              "description": "",
+              "type": "debit",
+              "amount": 50000,
+              "reference": "",
+              "contraAccountId": 11
+            },
+            {
+              "id": 541,
+              "transactionId": 541,
+              "date": "2026-05-19",
+              "description": "New test",
+              "type": "credit",
+              "amount": 50000,
+              "reference": "IN2",
+              "contraAccountId": 14
+            },
+            {
+              "id": 543,
+              "transactionId": 543,
+              "date": "2026-05-19",
+              "description": "",
+              "type": "credit",
+              "amount": 2000,
+              "reference": "",
+              "contraAccountId": 542
+            },
+            {
+              "id": 546,
+              "transactionId": 546,
+              "date": "2026-05-19",
+              "description": "Car Expenses",
+              "type": "credit",
+              "amount": 5000,
+              "reference": "",
+              "contraAccountId": 545
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "Accounts Receivable",
+          "code": "1200",
+          "type": "asset",
+          "description": "Uncollected invoices",
+          "openingBalance": 0,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 27,
+              "transactionId": 26,
+              "date": "2026-05-12",
+              "description": "Billed Client for Project Alpha",
+              "type": "debit",
+              "amount": 2000,
+              "reference": "INV-101",
+              "contraAccountId": 14
+            },
+            {
+              "id": 200,
+              "transactionId": 100,
+              "date": "2026-05-15",
+              "description": "Billed client for consulting phase 1",
+              "type": "debit",
+              "amount": 3520,
+              "reference": "INV-200",
+              "contraAccountId": 14
+            },
+            {
+              "id": 208,
+              "transactionId": 104,
+              "date": "2026-05-15",
+              "description": "Billed client for consulting phase 2",
+              "type": "debit",
+              "amount": 4196,
+              "reference": "INV-201",
+              "contraAccountId": 14
+            },
+            {
+              "id": 217,
+              "transactionId": 108,
+              "date": "2026-05-16",
+              "description": "Received payment for INV-200",
+              "type": "credit",
+              "amount": 2848,
+              "reference": "REC-100",
+              "contraAccountId": 10
+            },
+            {
+              "id": 219,
+              "transactionId": 109,
+              "date": "2026-05-16",
+              "description": "Received payment for INV-201",
+              "type": "credit",
+              "amount": 2119,
+              "reference": "REC-101",
+              "contraAccountId": 10
+            },
+            {
+              "id": 220,
+              "transactionId": 110,
+              "date": "2026-05-16",
+              "description": "Billed client for consulting phase 3",
+              "type": "debit",
+              "amount": 4168,
+              "reference": "INV-202",
+              "contraAccountId": 14
+            },
+            {
+              "id": 228,
+              "transactionId": 114,
+              "date": "2026-05-16",
+              "description": "Billed client for consulting phase 4",
+              "type": "debit",
+              "amount": 3020,
+              "reference": "INV-203",
+              "contraAccountId": 14
+            },
+            {
+              "id": 241,
+              "transactionId": 120,
+              "date": "2026-05-17",
+              "description": "Received payment for INV-202",
+              "type": "credit",
+              "amount": 2959,
+              "reference": "REC-102",
+              "contraAccountId": 10
+            },
+            {
+              "id": 243,
+              "transactionId": 121,
+              "date": "2026-05-17",
+              "description": "Received payment for INV-203",
+              "type": "credit",
+              "amount": 2550,
+              "reference": "REC-103",
+              "contraAccountId": 10
+            },
+            {
+              "id": 244,
+              "transactionId": 122,
+              "date": "2026-05-17",
+              "description": "Billed client for consulting phase 5",
+              "type": "debit",
+              "amount": 4413,
+              "reference": "INV-204",
+              "contraAccountId": 14
+            },
+            {
+              "id": 252,
+              "transactionId": 126,
+              "date": "2026-05-17",
+              "description": "Billed client for consulting phase 6",
+              "type": "debit",
+              "amount": 1573,
+              "reference": "INV-205",
+              "contraAccountId": 14
+            },
+            {
+              "id": 265,
+              "transactionId": 132,
+              "date": "2026-05-18",
+              "description": "Received payment for INV-204",
+              "type": "credit",
+              "amount": 1076,
+              "reference": "REC-104",
+              "contraAccountId": 10
+            },
+            {
+              "id": 267,
+              "transactionId": 133,
+              "date": "2026-05-18",
+              "description": "Received payment for INV-205",
+              "type": "credit",
+              "amount": 2132,
+              "reference": "REC-105",
+              "contraAccountId": 10
+            },
+            {
+              "id": 268,
+              "transactionId": 134,
+              "date": "2026-05-18",
+              "description": "Billed client for consulting phase 7",
+              "type": "debit",
+              "amount": 1527,
+              "reference": "INV-206",
+              "contraAccountId": 14
+            },
+            {
+              "id": 276,
+              "transactionId": 138,
+              "date": "2026-05-18",
+              "description": "Billed client for consulting phase 8",
+              "type": "debit",
+              "amount": 2360,
+              "reference": "INV-207",
+              "contraAccountId": 14
+            },
+            {
+              "id": 289,
+              "transactionId": 144,
+              "date": "2026-05-19",
+              "description": "Received payment for INV-206",
+              "type": "credit",
+              "amount": 2948,
+              "reference": "REC-106",
+              "contraAccountId": 10
+            },
+            {
+              "id": 291,
+              "transactionId": 145,
+              "date": "2026-05-19",
+              "description": "Received payment for INV-207",
+              "type": "credit",
+              "amount": 1199,
+              "reference": "REC-107",
+              "contraAccountId": 10
+            },
+            {
+              "id": 292,
+              "transactionId": 146,
+              "date": "2026-05-19",
+              "description": "Billed client for consulting phase 9",
+              "type": "debit",
+              "amount": 4338,
+              "reference": "INV-208",
+              "contraAccountId": 14
+            },
+            {
+              "id": 300,
+              "transactionId": 150,
+              "date": "2026-05-19",
+              "description": "Billed client for consulting phase 10",
+              "type": "debit",
+              "amount": 2947,
+              "reference": "INV-209",
+              "contraAccountId": 14
+            },
+            {
+              "id": 313,
+              "transactionId": 156,
+              "date": "2026-05-20",
+              "description": "Received payment for INV-208",
+              "type": "credit",
+              "amount": 1983,
+              "reference": "REC-108",
+              "contraAccountId": 10
+            },
+            {
+              "id": 315,
+              "transactionId": 157,
+              "date": "2026-05-20",
+              "description": "Received payment for INV-209",
+              "type": "credit",
+              "amount": 2491,
+              "reference": "REC-109",
+              "contraAccountId": 10
+            },
+            {
+              "id": 316,
+              "transactionId": 158,
+              "date": "2026-05-20",
+              "description": "Billed client for consulting phase 11",
+              "type": "debit",
+              "amount": 3247,
+              "reference": "INV-2010",
+              "contraAccountId": 14
+            },
+            {
+              "id": 324,
+              "transactionId": 162,
+              "date": "2026-05-20",
+              "description": "Billed client for consulting phase 12",
+              "type": "debit",
+              "amount": 2054,
+              "reference": "INV-2011",
+              "contraAccountId": 14
+            },
+            {
+              "id": 337,
+              "transactionId": 168,
+              "date": "2026-05-21",
+              "description": "Received payment for INV-2010",
+              "type": "credit",
+              "amount": 1858,
+              "reference": "REC-1010",
+              "contraAccountId": 10
+            },
+            {
+              "id": 339,
+              "transactionId": 169,
+              "date": "2026-05-21",
+              "description": "Received payment for INV-2011",
+              "type": "credit",
+              "amount": 1889,
+              "reference": "REC-1011",
+              "contraAccountId": 10
+            },
+            {
+              "id": 340,
+              "transactionId": 170,
+              "date": "2026-05-21",
+              "description": "Billed client for consulting phase 13",
+              "type": "debit",
+              "amount": 2928,
+              "reference": "INV-2012",
+              "contraAccountId": 14
+            },
+            {
+              "id": 348,
+              "transactionId": 174,
+              "date": "2026-05-21",
+              "description": "Billed client for consulting phase 14",
+              "type": "debit",
+              "amount": 3437,
+              "reference": "INV-2013",
+              "contraAccountId": 14
+            },
+            {
+              "id": 361,
+              "transactionId": 180,
+              "date": "2026-05-22",
+              "description": "Received payment for INV-2012",
+              "type": "credit",
+              "amount": 2653,
+              "reference": "REC-1012",
+              "contraAccountId": 10
+            },
+            {
+              "id": 363,
+              "transactionId": 181,
+              "date": "2026-05-22",
+              "description": "Received payment for INV-2013",
+              "type": "credit",
+              "amount": 2279,
+              "reference": "REC-1013",
+              "contraAccountId": 10
+            },
+            {
+              "id": 364,
+              "transactionId": 182,
+              "date": "2026-05-22",
+              "description": "Billed client for consulting phase 15",
+              "type": "debit",
+              "amount": 2621,
+              "reference": "INV-2014",
+              "contraAccountId": 14
+            },
+            {
+              "id": 372,
+              "transactionId": 186,
+              "date": "2026-05-22",
+              "description": "Billed client for consulting phase 16",
+              "type": "debit",
+              "amount": 3619,
+              "reference": "INV-2015",
+              "contraAccountId": 14
+            },
+            {
+              "id": 385,
+              "transactionId": 192,
+              "date": "2026-05-23",
+              "description": "Received payment for INV-2014",
+              "type": "credit",
+              "amount": 1336,
+              "reference": "REC-1014",
+              "contraAccountId": 10
+            },
+            {
+              "id": 387,
+              "transactionId": 193,
+              "date": "2026-05-23",
+              "description": "Received payment for INV-2015",
+              "type": "credit",
+              "amount": 2707,
+              "reference": "REC-1015",
+              "contraAccountId": 10
+            },
+            {
+              "id": 388,
+              "transactionId": 194,
+              "date": "2026-05-23",
+              "description": "Billed client for consulting phase 17",
+              "type": "debit",
+              "amount": 2681,
+              "reference": "INV-2016",
+              "contraAccountId": 14
+            },
+            {
+              "id": 396,
+              "transactionId": 198,
+              "date": "2026-05-23",
+              "description": "Billed client for consulting phase 18",
+              "type": "debit",
+              "amount": 1616,
+              "reference": "INV-2017",
+              "contraAccountId": 14
+            },
+            {
+              "id": 409,
+              "transactionId": 204,
+              "date": "2026-05-24",
+              "description": "Received payment for INV-2016",
+              "type": "credit",
+              "amount": 2926,
+              "reference": "REC-1016",
+              "contraAccountId": 10
+            },
+            {
+              "id": 411,
+              "transactionId": 205,
+              "date": "2026-05-24",
+              "description": "Received payment for INV-2017",
+              "type": "credit",
+              "amount": 2892,
+              "reference": "REC-1017",
+              "contraAccountId": 10
+            },
+            {
+              "id": 412,
+              "transactionId": 206,
+              "date": "2026-05-24",
+              "description": "Billed client for consulting phase 19",
+              "type": "debit",
+              "amount": 3450,
+              "reference": "INV-2018",
+              "contraAccountId": 14
+            },
+            {
+              "id": 420,
+              "transactionId": 210,
+              "date": "2026-05-24",
+              "description": "Billed client for consulting phase 20",
+              "type": "debit",
+              "amount": 4028,
+              "reference": "INV-2019",
+              "contraAccountId": 14
+            },
+            {
+              "id": 433,
+              "transactionId": 216,
+              "date": "2026-05-25",
+              "description": "Received payment for INV-2018",
+              "type": "credit",
+              "amount": 2255,
+              "reference": "REC-1018",
+              "contraAccountId": 10
+            },
+            {
+              "id": 435,
+              "transactionId": 217,
+              "date": "2026-05-25",
+              "description": "Received payment for INV-2019",
+              "type": "credit",
+              "amount": 1541,
+              "reference": "REC-1019",
+              "contraAccountId": 10
+            },
+            {
+              "id": 540,
+              "transactionId": 540,
+              "date": "2026-05-16",
+              "description": "",
+              "type": "credit",
+              "amount": 50000,
+              "reference": "",
+              "contraAccountId": 10
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "name": "Accounts Payable",
+          "code": "2000",
+          "type": "liability",
+          "description": "Unpaid vendor bills",
+          "openingBalance": 0,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 31,
+              "transactionId": 29,
+              "date": "2026-05-14",
+              "description": "Purchased Laptops from Dell",
+              "type": "credit",
+              "amount": 1500,
+              "reference": "BILL-55",
+              "contraAccountId": 16
+            },
+            {
+              "id": 205,
+              "transactionId": 102,
+              "date": "2026-05-15",
+              "description": "Purchased office hardware item 1",
+              "type": "credit",
+              "amount": 1072,
+              "reference": "BILL-200",
+              "contraAccountId": 16
+            },
+            {
+              "id": 213,
+              "transactionId": 106,
+              "date": "2026-05-15",
+              "description": "Purchased office hardware item 2",
+              "type": "credit",
+              "amount": 604,
+              "reference": "BILL-201",
+              "contraAccountId": 16
+            },
+            {
+              "id": 225,
+              "transactionId": 112,
+              "date": "2026-05-16",
+              "description": "Purchased office hardware item 3",
+              "type": "credit",
+              "amount": 1115,
+              "reference": "BILL-202",
+              "contraAccountId": 16
+            },
+            {
+              "id": 233,
+              "transactionId": 116,
+              "date": "2026-05-16",
+              "description": "Purchased office hardware item 4",
+              "type": "credit",
+              "amount": 543,
+              "reference": "BILL-203",
+              "contraAccountId": 16
+            },
+            {
+              "id": 236,
+              "transactionId": 118,
+              "date": "2026-05-17",
+              "description": "Settled BILL-200 with supplier",
+              "type": "debit",
+              "amount": 880,
+              "reference": "VND-300",
+              "contraAccountId": 10
+            },
+            {
+              "id": 238,
+              "transactionId": 119,
+              "date": "2026-05-17",
+              "description": "Settled BILL-201 with supplier",
+              "type": "debit",
+              "amount": 231,
+              "reference": "VND-301",
+              "contraAccountId": 10
+            },
+            {
+              "id": 249,
+              "transactionId": 124,
+              "date": "2026-05-17",
+              "description": "Purchased office hardware item 5",
+              "type": "credit",
+              "amount": 734,
+              "reference": "BILL-204",
+              "contraAccountId": 16
+            },
+            {
+              "id": 257,
+              "transactionId": 128,
+              "date": "2026-05-17",
+              "description": "Purchased office hardware item 6",
+              "type": "credit",
+              "amount": 1193,
+              "reference": "BILL-205",
+              "contraAccountId": 16
+            },
+            {
+              "id": 260,
+              "transactionId": 130,
+              "date": "2026-05-18",
+              "description": "Settled BILL-202 with supplier",
+              "type": "debit",
+              "amount": 816,
+              "reference": "VND-302",
+              "contraAccountId": 10
+            },
+            {
+              "id": 262,
+              "transactionId": 131,
+              "date": "2026-05-18",
+              "description": "Settled BILL-203 with supplier",
+              "type": "debit",
+              "amount": 205,
+              "reference": "VND-303",
+              "contraAccountId": 10
+            },
+            {
+              "id": 273,
+              "transactionId": 136,
+              "date": "2026-05-18",
+              "description": "Purchased office hardware item 7",
+              "type": "credit",
+              "amount": 888,
+              "reference": "BILL-206",
+              "contraAccountId": 16
+            },
+            {
+              "id": 281,
+              "transactionId": 140,
+              "date": "2026-05-18",
+              "description": "Purchased office hardware item 8",
+              "type": "credit",
+              "amount": 538,
+              "reference": "BILL-207",
+              "contraAccountId": 16
+            },
+            {
+              "id": 284,
+              "transactionId": 142,
+              "date": "2026-05-19",
+              "description": "Settled BILL-204 with supplier",
+              "type": "debit",
+              "amount": 343,
+              "reference": "VND-304",
+              "contraAccountId": 10
+            },
+            {
+              "id": 286,
+              "transactionId": 143,
+              "date": "2026-05-19",
+              "description": "Settled BILL-205 with supplier",
+              "type": "debit",
+              "amount": 579,
+              "reference": "VND-305",
+              "contraAccountId": 10
+            },
+            {
+              "id": 297,
+              "transactionId": 148,
+              "date": "2026-05-19",
+              "description": "Purchased office hardware item 9",
+              "type": "credit",
+              "amount": 549,
+              "reference": "BILL-208",
+              "contraAccountId": 16
+            },
+            {
+              "id": 305,
+              "transactionId": 152,
+              "date": "2026-05-19",
+              "description": "Purchased office hardware item 10",
+              "type": "credit",
+              "amount": 397,
+              "reference": "BILL-209",
+              "contraAccountId": 16
+            },
+            {
+              "id": 308,
+              "transactionId": 154,
+              "date": "2026-05-20",
+              "description": "Settled BILL-206 with supplier",
+              "type": "debit",
+              "amount": 677,
+              "reference": "VND-306",
+              "contraAccountId": 10
+            },
+            {
+              "id": 310,
+              "transactionId": 155,
+              "date": "2026-05-20",
+              "description": "Settled BILL-207 with supplier",
+              "type": "debit",
+              "amount": 646,
+              "reference": "VND-307",
+              "contraAccountId": 10
+            },
+            {
+              "id": 321,
+              "transactionId": 160,
+              "date": "2026-05-20",
+              "description": "Purchased office hardware item 11",
+              "type": "credit",
+              "amount": 612,
+              "reference": "BILL-210",
+              "contraAccountId": 16
+            },
+            {
+              "id": 329,
+              "transactionId": 164,
+              "date": "2026-05-20",
+              "description": "Purchased office hardware item 12",
+              "type": "credit",
+              "amount": 462,
+              "reference": "BILL-211",
+              "contraAccountId": 16
+            },
+            {
+              "id": 332,
+              "transactionId": 166,
+              "date": "2026-05-21",
+              "description": "Settled BILL-208 with supplier",
+              "type": "debit",
+              "amount": 445,
+              "reference": "VND-308",
+              "contraAccountId": 10
+            },
+            {
+              "id": 334,
+              "transactionId": 167,
+              "date": "2026-05-21",
+              "description": "Settled BILL-209 with supplier",
+              "type": "debit",
+              "amount": 409,
+              "reference": "VND-309",
+              "contraAccountId": 10
+            },
+            {
+              "id": 345,
+              "transactionId": 172,
+              "date": "2026-05-21",
+              "description": "Purchased office hardware item 13",
+              "type": "credit",
+              "amount": 1083,
+              "reference": "BILL-212",
+              "contraAccountId": 16
+            },
+            {
+              "id": 353,
+              "transactionId": 176,
+              "date": "2026-05-21",
+              "description": "Purchased office hardware item 14",
+              "type": "credit",
+              "amount": 1037,
+              "reference": "BILL-213",
+              "contraAccountId": 16
+            },
+            {
+              "id": 356,
+              "transactionId": 178,
+              "date": "2026-05-22",
+              "description": "Settled BILL-210 with supplier",
+              "type": "debit",
+              "amount": 868,
+              "reference": "VND-310",
+              "contraAccountId": 10
+            },
+            {
+              "id": 358,
+              "transactionId": 179,
+              "date": "2026-05-22",
+              "description": "Settled BILL-211 with supplier",
+              "type": "debit",
+              "amount": 657,
+              "reference": "VND-311",
+              "contraAccountId": 10
+            },
+            {
+              "id": 369,
+              "transactionId": 184,
+              "date": "2026-05-22",
+              "description": "Purchased office hardware item 15",
+              "type": "credit",
+              "amount": 327,
+              "reference": "BILL-214",
+              "contraAccountId": 16
+            },
+            {
+              "id": 377,
+              "transactionId": 188,
+              "date": "2026-05-22",
+              "description": "Purchased office hardware item 16",
+              "type": "credit",
+              "amount": 810,
+              "reference": "BILL-215",
+              "contraAccountId": 16
+            },
+            {
+              "id": 380,
+              "transactionId": 190,
+              "date": "2026-05-23",
+              "description": "Settled BILL-212 with supplier",
+              "type": "debit",
+              "amount": 437,
+              "reference": "VND-312",
+              "contraAccountId": 10
+            },
+            {
+              "id": 382,
+              "transactionId": 191,
+              "date": "2026-05-23",
+              "description": "Settled BILL-213 with supplier",
+              "type": "debit",
+              "amount": 357,
+              "reference": "VND-313",
+              "contraAccountId": 10
+            },
+            {
+              "id": 393,
+              "transactionId": 196,
+              "date": "2026-05-23",
+              "description": "Purchased office hardware item 17",
+              "type": "credit",
+              "amount": 538,
+              "reference": "BILL-216",
+              "contraAccountId": 16
+            },
+            {
+              "id": 401,
+              "transactionId": 200,
+              "date": "2026-05-23",
+              "description": "Purchased office hardware item 18",
+              "type": "credit",
+              "amount": 1072,
+              "reference": "BILL-217",
+              "contraAccountId": 16
+            },
+            {
+              "id": 404,
+              "transactionId": 202,
+              "date": "2026-05-24",
+              "description": "Settled BILL-214 with supplier",
+              "type": "debit",
+              "amount": 585,
+              "reference": "VND-314",
+              "contraAccountId": 10
+            },
+            {
+              "id": 406,
+              "transactionId": 203,
+              "date": "2026-05-24",
+              "description": "Settled BILL-215 with supplier",
+              "type": "debit",
+              "amount": 684,
+              "reference": "VND-315",
+              "contraAccountId": 10
+            },
+            {
+              "id": 417,
+              "transactionId": 208,
+              "date": "2026-05-24",
+              "description": "Purchased office hardware item 19",
+              "type": "credit",
+              "amount": 360,
+              "reference": "BILL-218",
+              "contraAccountId": 16
+            },
+            {
+              "id": 425,
+              "transactionId": 212,
+              "date": "2026-05-24",
+              "description": "Purchased office hardware item 20",
+              "type": "credit",
+              "amount": 1134,
+              "reference": "BILL-219",
+              "contraAccountId": 16
+            },
+            {
+              "id": 428,
+              "transactionId": 214,
+              "date": "2026-05-25",
+              "description": "Settled BILL-216 with supplier",
+              "type": "debit",
+              "amount": 521,
+              "reference": "VND-316",
+              "contraAccountId": 10
+            },
+            {
+              "id": 430,
+              "transactionId": 215,
+              "date": "2026-05-25",
+              "description": "Settled BILL-217 with supplier",
+              "type": "debit",
+              "amount": 272,
+              "reference": "VND-317",
+              "contraAccountId": 10
+            },
+            {
+              "id": 436,
+              "transactionId": 218,
+              "date": "2026-05-26",
+              "description": "Settled BILL-218 with supplier",
+              "type": "debit",
+              "amount": 406,
+              "reference": "VND-318",
+              "contraAccountId": 10
+            },
+            {
+              "id": 438,
+              "transactionId": 219,
+              "date": "2026-05-26",
+              "description": "Settled BILL-219 with supplier",
+              "type": "debit",
+              "amount": 626,
+              "reference": "VND-319",
+              "contraAccountId": 10
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "Owner's Equity",
+          "code": "3000",
+          "type": "equity",
+          "description": "Initial capital investment",
+          "openingBalance": 10000,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 207,
+              "transactionId": 103,
+              "date": "2026-05-15",
+              "description": "Capital contribution batch 1",
+              "type": "credit",
+              "amount": 2668,
+              "reference": "CAP-400",
+              "contraAccountId": 10
+            },
+            {
+              "id": 215,
+              "transactionId": 107,
+              "date": "2026-05-15",
+              "description": "Capital contribution batch 2",
+              "type": "credit",
+              "amount": 3280,
+              "reference": "CAP-401",
+              "contraAccountId": 10
+            },
+            {
+              "id": 227,
+              "transactionId": 113,
+              "date": "2026-05-16",
+              "description": "Capital contribution batch 3",
+              "type": "credit",
+              "amount": 2796,
+              "reference": "CAP-402",
+              "contraAccountId": 10
+            },
+            {
+              "id": 235,
+              "transactionId": 117,
+              "date": "2026-05-16",
+              "description": "Capital contribution batch 4",
+              "type": "credit",
+              "amount": 3526,
+              "reference": "CAP-403",
+              "contraAccountId": 10
+            },
+            {
+              "id": 251,
+              "transactionId": 125,
+              "date": "2026-05-17",
+              "description": "Capital contribution batch 5",
+              "type": "credit",
+              "amount": 2654,
+              "reference": "CAP-404",
+              "contraAccountId": 10
+            },
+            {
+              "id": 259,
+              "transactionId": 129,
+              "date": "2026-05-17",
+              "description": "Capital contribution batch 6",
+              "type": "credit",
+              "amount": 3591,
+              "reference": "CAP-405",
+              "contraAccountId": 10
+            },
+            {
+              "id": 275,
+              "transactionId": 137,
+              "date": "2026-05-18",
+              "description": "Capital contribution batch 7",
+              "type": "credit",
+              "amount": 2931,
+              "reference": "CAP-406",
+              "contraAccountId": 10
+            },
+            {
+              "id": 283,
+              "transactionId": 141,
+              "date": "2026-05-18",
+              "description": "Capital contribution batch 8",
+              "type": "credit",
+              "amount": 2285,
+              "reference": "CAP-407",
+              "contraAccountId": 10
+            },
+            {
+              "id": 299,
+              "transactionId": 149,
+              "date": "2026-05-19",
+              "description": "Capital contribution batch 9",
+              "type": "credit",
+              "amount": 4978,
+              "reference": "CAP-408",
+              "contraAccountId": 10
+            },
+            {
+              "id": 307,
+              "transactionId": 153,
+              "date": "2026-05-19",
+              "description": "Capital contribution batch 10",
+              "type": "credit",
+              "amount": 2366,
+              "reference": "CAP-409",
+              "contraAccountId": 10
+            },
+            {
+              "id": 323,
+              "transactionId": 161,
+              "date": "2026-05-20",
+              "description": "Capital contribution batch 11",
+              "type": "credit",
+              "amount": 4468,
+              "reference": "CAP-410",
+              "contraAccountId": 10
+            },
+            {
+              "id": 331,
+              "transactionId": 165,
+              "date": "2026-05-20",
+              "description": "Capital contribution batch 12",
+              "type": "credit",
+              "amount": 2326,
+              "reference": "CAP-411",
+              "contraAccountId": 10
+            },
+            {
+              "id": 347,
+              "transactionId": 173,
+              "date": "2026-05-21",
+              "description": "Capital contribution batch 13",
+              "type": "credit",
+              "amount": 2047,
+              "reference": "CAP-412",
+              "contraAccountId": 10
+            },
+            {
+              "id": 355,
+              "transactionId": 177,
+              "date": "2026-05-21",
+              "description": "Capital contribution batch 14",
+              "type": "credit",
+              "amount": 4317,
+              "reference": "CAP-413",
+              "contraAccountId": 10
+            },
+            {
+              "id": 371,
+              "transactionId": 185,
+              "date": "2026-05-22",
+              "description": "Capital contribution batch 15",
+              "type": "credit",
+              "amount": 3070,
+              "reference": "CAP-414",
+              "contraAccountId": 10
+            },
+            {
+              "id": 379,
+              "transactionId": 189,
+              "date": "2026-05-22",
+              "description": "Capital contribution batch 16",
+              "type": "credit",
+              "amount": 3952,
+              "reference": "CAP-415",
+              "contraAccountId": 10
+            },
+            {
+              "id": 395,
+              "transactionId": 197,
+              "date": "2026-05-23",
+              "description": "Capital contribution batch 17",
+              "type": "credit",
+              "amount": 3647,
+              "reference": "CAP-416",
+              "contraAccountId": 10
+            },
+            {
+              "id": 403,
+              "transactionId": 201,
+              "date": "2026-05-23",
+              "description": "Capital contribution batch 18",
+              "type": "credit",
+              "amount": 3539,
+              "reference": "CAP-417",
+              "contraAccountId": 10
+            },
+            {
+              "id": 419,
+              "transactionId": 209,
+              "date": "2026-05-24",
+              "description": "Capital contribution batch 19",
+              "type": "credit",
+              "amount": 4284,
+              "reference": "CAP-418",
+              "contraAccountId": 10
+            },
+            {
+              "id": 427,
+              "transactionId": 213,
+              "date": "2026-05-24",
+              "description": "Capital contribution batch 20",
+              "type": "credit",
+              "amount": 3194,
+              "reference": "CAP-419",
+              "contraAccountId": 10
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "Sales Revenue",
+          "code": "4000",
+          "type": "revenue",
+          "description": "Income from services",
+          "openingBalance": 0,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 22,
+              "transactionId": 20,
+              "date": "2026-05-05",
+              "description": "Consulting Services Payment",
+              "type": "credit",
+              "amount": 5000,
+              "reference": "INV-100",
+              "contraAccountId": 10
+            },
+            {
+              "id": 28,
+              "transactionId": 26,
+              "date": "2026-05-12",
+              "description": "Billed Client for Project Alpha",
+              "type": "credit",
+              "amount": 2000,
+              "reference": "INV-101",
+              "contraAccountId": 11
+            },
+            {
+              "id": 201,
+              "transactionId": 100,
+              "date": "2026-05-15",
+              "description": "Billed client for consulting phase 1",
+              "type": "credit",
+              "amount": 3520,
+              "reference": "INV-200",
+              "contraAccountId": 11
+            },
+            {
+              "id": 209,
+              "transactionId": 104,
+              "date": "2026-05-15",
+              "description": "Billed client for consulting phase 2",
+              "type": "credit",
+              "amount": 4196,
+              "reference": "INV-201",
+              "contraAccountId": 11
+            },
+            {
+              "id": 221,
+              "transactionId": 110,
+              "date": "2026-05-16",
+              "description": "Billed client for consulting phase 3",
+              "type": "credit",
+              "amount": 4168,
+              "reference": "INV-202",
+              "contraAccountId": 11
+            },
+            {
+              "id": 229,
+              "transactionId": 114,
+              "date": "2026-05-16",
+              "description": "Billed client for consulting phase 4",
+              "type": "credit",
+              "amount": 3020,
+              "reference": "INV-203",
+              "contraAccountId": 11
+            },
+            {
+              "id": 245,
+              "transactionId": 122,
+              "date": "2026-05-17",
+              "description": "Billed client for consulting phase 5",
+              "type": "credit",
+              "amount": 4413,
+              "reference": "INV-204",
+              "contraAccountId": 11
+            },
+            {
+              "id": 253,
+              "transactionId": 126,
+              "date": "2026-05-17",
+              "description": "Billed client for consulting phase 6",
+              "type": "credit",
+              "amount": 1573,
+              "reference": "INV-205",
+              "contraAccountId": 11
+            },
+            {
+              "id": 269,
+              "transactionId": 134,
+              "date": "2026-05-18",
+              "description": "Billed client for consulting phase 7",
+              "type": "credit",
+              "amount": 1527,
+              "reference": "INV-206",
+              "contraAccountId": 11
+            },
+            {
+              "id": 277,
+              "transactionId": 138,
+              "date": "2026-05-18",
+              "description": "Billed client for consulting phase 8",
+              "type": "credit",
+              "amount": 2360,
+              "reference": "INV-207",
+              "contraAccountId": 11
+            },
+            {
+              "id": 293,
+              "transactionId": 146,
+              "date": "2026-05-19",
+              "description": "Billed client for consulting phase 9",
+              "type": "credit",
+              "amount": 4338,
+              "reference": "INV-208",
+              "contraAccountId": 11
+            },
+            {
+              "id": 301,
+              "transactionId": 150,
+              "date": "2026-05-19",
+              "description": "Billed client for consulting phase 10",
+              "type": "credit",
+              "amount": 2947,
+              "reference": "INV-209",
+              "contraAccountId": 11
+            },
+            {
+              "id": 317,
+              "transactionId": 158,
+              "date": "2026-05-20",
+              "description": "Billed client for consulting phase 11",
+              "type": "credit",
+              "amount": 3247,
+              "reference": "INV-2010",
+              "contraAccountId": 11
+            },
+            {
+              "id": 325,
+              "transactionId": 162,
+              "date": "2026-05-20",
+              "description": "Billed client for consulting phase 12",
+              "type": "credit",
+              "amount": 2054,
+              "reference": "INV-2011",
+              "contraAccountId": 11
+            },
+            {
+              "id": 341,
+              "transactionId": 170,
+              "date": "2026-05-21",
+              "description": "Billed client for consulting phase 13",
+              "type": "credit",
+              "amount": 2928,
+              "reference": "INV-2012",
+              "contraAccountId": 11
+            },
+            {
+              "id": 349,
+              "transactionId": 174,
+              "date": "2026-05-21",
+              "description": "Billed client for consulting phase 14",
+              "type": "credit",
+              "amount": 3437,
+              "reference": "INV-2013",
+              "contraAccountId": 11
+            },
+            {
+              "id": 365,
+              "transactionId": 182,
+              "date": "2026-05-22",
+              "description": "Billed client for consulting phase 15",
+              "type": "credit",
+              "amount": 2621,
+              "reference": "INV-2014",
+              "contraAccountId": 11
+            },
+            {
+              "id": 373,
+              "transactionId": 186,
+              "date": "2026-05-22",
+              "description": "Billed client for consulting phase 16",
+              "type": "credit",
+              "amount": 3619,
+              "reference": "INV-2015",
+              "contraAccountId": 11
+            },
+            {
+              "id": 389,
+              "transactionId": 194,
+              "date": "2026-05-23",
+              "description": "Billed client for consulting phase 17",
+              "type": "credit",
+              "amount": 2681,
+              "reference": "INV-2016",
+              "contraAccountId": 11
+            },
+            {
+              "id": 397,
+              "transactionId": 198,
+              "date": "2026-05-23",
+              "description": "Billed client for consulting phase 18",
+              "type": "credit",
+              "amount": 1616,
+              "reference": "INV-2017",
+              "contraAccountId": 11
+            },
+            {
+              "id": 413,
+              "transactionId": 206,
+              "date": "2026-05-24",
+              "description": "Billed client for consulting phase 19",
+              "type": "credit",
+              "amount": 3450,
+              "reference": "INV-2018",
+              "contraAccountId": 11
+            },
+            {
+              "id": 421,
+              "transactionId": 210,
+              "date": "2026-05-24",
+              "description": "Billed client for consulting phase 20",
+              "type": "credit",
+              "amount": 4028,
+              "reference": "INV-2019",
+              "contraAccountId": 11
+            },
+            {
+              "id": 541,
+              "transactionId": 541,
+              "date": "2026-05-19",
+              "description": "New test",
+              "type": "debit",
+              "amount": 50000,
+              "reference": "IN2",
+              "contraAccountId": 10
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "Rent Expense",
+          "code": "5000",
+          "type": "expense",
+          "description": "Monthly office rent",
+          "openingBalance": 0,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 24,
+              "transactionId": 23,
+              "date": "2026-05-10",
+              "description": "Office Rent for May",
+              "type": "debit",
+              "amount": 1000,
+              "reference": "CHK-001",
+              "contraAccountId": 10
+            },
+            {
+              "id": 202,
+              "transactionId": 101,
+              "date": "2026-05-15",
+              "description": "Utility payment month ref 1",
+              "type": "debit",
+              "amount": 391,
+              "reference": "UTIL-100",
+              "contraAccountId": 10
+            },
+            {
+              "id": 210,
+              "transactionId": 105,
+              "date": "2026-05-15",
+              "description": "Utility payment month ref 2",
+              "type": "debit",
+              "amount": 448,
+              "reference": "UTIL-101",
+              "contraAccountId": 10
+            },
+            {
+              "id": 222,
+              "transactionId": 111,
+              "date": "2026-05-16",
+              "description": "Utility payment month ref 3",
+              "type": "debit",
+              "amount": 396,
+              "reference": "UTIL-102",
+              "contraAccountId": 10
+            },
+            {
+              "id": 230,
+              "transactionId": 115,
+              "date": "2026-05-16",
+              "description": "Utility payment month ref 4",
+              "type": "debit",
+              "amount": 230,
+              "reference": "UTIL-103",
+              "contraAccountId": 10
+            },
+            {
+              "id": 246,
+              "transactionId": 123,
+              "date": "2026-05-17",
+              "description": "Utility payment month ref 5",
+              "type": "debit",
+              "amount": 403,
+              "reference": "UTIL-104",
+              "contraAccountId": 10
+            },
+            {
+              "id": 254,
+              "transactionId": 127,
+              "date": "2026-05-17",
+              "description": "Utility payment month ref 6",
+              "type": "debit",
+              "amount": 166,
+              "reference": "UTIL-105",
+              "contraAccountId": 10
+            },
+            {
+              "id": 270,
+              "transactionId": 135,
+              "date": "2026-05-18",
+              "description": "Utility payment month ref 7",
+              "type": "debit",
+              "amount": 355,
+              "reference": "UTIL-106",
+              "contraAccountId": 10
+            },
+            {
+              "id": 278,
+              "transactionId": 139,
+              "date": "2026-05-18",
+              "description": "Utility payment month ref 8",
+              "type": "debit",
+              "amount": 225,
+              "reference": "UTIL-107",
+              "contraAccountId": 10
+            },
+            {
+              "id": 294,
+              "transactionId": 147,
+              "date": "2026-05-19",
+              "description": "Utility payment month ref 9",
+              "type": "debit",
+              "amount": 247,
+              "reference": "UTIL-108",
+              "contraAccountId": 10
+            },
+            {
+              "id": 302,
+              "transactionId": 151,
+              "date": "2026-05-19",
+              "description": "Utility payment month ref 10",
+              "type": "debit",
+              "amount": 410,
+              "reference": "UTIL-109",
+              "contraAccountId": 10
+            },
+            {
+              "id": 318,
+              "transactionId": 159,
+              "date": "2026-05-20",
+              "description": "Utility payment month ref 11",
+              "type": "debit",
+              "amount": 272,
+              "reference": "UTIL-110",
+              "contraAccountId": 10
+            },
+            {
+              "id": 326,
+              "transactionId": 163,
+              "date": "2026-05-20",
+              "description": "Utility payment month ref 12",
+              "type": "debit",
+              "amount": 415,
+              "reference": "UTIL-111",
+              "contraAccountId": 10
+            },
+            {
+              "id": 342,
+              "transactionId": 171,
+              "date": "2026-05-21",
+              "description": "Utility payment month ref 13",
+              "type": "debit",
+              "amount": 210,
+              "reference": "UTIL-112",
+              "contraAccountId": 10
+            },
+            {
+              "id": 350,
+              "transactionId": 175,
+              "date": "2026-05-21",
+              "description": "Utility payment month ref 14",
+              "type": "debit",
+              "amount": 424,
+              "reference": "UTIL-113",
+              "contraAccountId": 10
+            },
+            {
+              "id": 366,
+              "transactionId": 183,
+              "date": "2026-05-22",
+              "description": "Utility payment month ref 15",
+              "type": "debit",
+              "amount": 266,
+              "reference": "UTIL-114",
+              "contraAccountId": 10
+            },
+            {
+              "id": 374,
+              "transactionId": 187,
+              "date": "2026-05-22",
+              "description": "Utility payment month ref 16",
+              "type": "debit",
+              "amount": 266,
+              "reference": "UTIL-115",
+              "contraAccountId": 10
+            },
+            {
+              "id": 390,
+              "transactionId": 195,
+              "date": "2026-05-23",
+              "description": "Utility payment month ref 17",
+              "type": "debit",
+              "amount": 347,
+              "reference": "UTIL-116",
+              "contraAccountId": 10
+            },
+            {
+              "id": 398,
+              "transactionId": 199,
+              "date": "2026-05-23",
+              "description": "Utility payment month ref 18",
+              "type": "debit",
+              "amount": 192,
+              "reference": "UTIL-117",
+              "contraAccountId": 10
+            },
+            {
+              "id": 414,
+              "transactionId": 207,
+              "date": "2026-05-24",
+              "description": "Utility payment month ref 19",
+              "type": "debit",
+              "amount": 270,
+              "reference": "UTIL-118",
+              "contraAccountId": 10
+            },
+            {
+              "id": 422,
+              "transactionId": 211,
+              "date": "2026-05-24",
+              "description": "Utility payment month ref 20",
+              "type": "debit",
+              "amount": 326,
+              "reference": "UTIL-119",
+              "contraAccountId": 10
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "Office Equipment",
+          "code": "1500",
+          "type": "asset",
+          "description": "Computers and hardware",
+          "openingBalance": 0,
+          "createdAt": "2026-05-01T00:00:00.000Z",
+          "entries": [
+            {
+              "id": 30,
+              "transactionId": 29,
+              "date": "2026-05-14",
+              "description": "Purchased Laptops from Dell",
+              "type": "debit",
+              "amount": 1500,
+              "reference": "BILL-55",
+              "contraAccountId": 12
+            },
+            {
+              "id": 204,
+              "transactionId": 102,
+              "date": "2026-05-15",
+              "description": "Purchased office hardware item 1",
+              "type": "debit",
+              "amount": 1072,
+              "reference": "BILL-200",
+              "contraAccountId": 12
+            },
+            {
+              "id": 212,
+              "transactionId": 106,
+              "date": "2026-05-15",
+              "description": "Purchased office hardware item 2",
+              "type": "debit",
+              "amount": 604,
+              "reference": "BILL-201",
+              "contraAccountId": 12
+            },
+            {
+              "id": 224,
+              "transactionId": 112,
+              "date": "2026-05-16",
+              "description": "Purchased office hardware item 3",
+              "type": "debit",
+              "amount": 1115,
+              "reference": "BILL-202",
+              "contraAccountId": 12
+            },
+            {
+              "id": 232,
+              "transactionId": 116,
+              "date": "2026-05-16",
+              "description": "Purchased office hardware item 4",
+              "type": "debit",
+              "amount": 543,
+              "reference": "BILL-203",
+              "contraAccountId": 12
+            },
+            {
+              "id": 248,
+              "transactionId": 124,
+              "date": "2026-05-17",
+              "description": "Purchased office hardware item 5",
+              "type": "debit",
+              "amount": 734,
+              "reference": "BILL-204",
+              "contraAccountId": 12
+            },
+            {
+              "id": 256,
+              "transactionId": 128,
+              "date": "2026-05-17",
+              "description": "Purchased office hardware item 6",
+              "type": "debit",
+              "amount": 1193,
+              "reference": "BILL-205",
+              "contraAccountId": 12
+            },
+            {
+              "id": 272,
+              "transactionId": 136,
+              "date": "2026-05-18",
+              "description": "Purchased office hardware item 7",
+              "type": "debit",
+              "amount": 888,
+              "reference": "BILL-206",
+              "contraAccountId": 12
+            },
+            {
+              "id": 280,
+              "transactionId": 140,
+              "date": "2026-05-18",
+              "description": "Purchased office hardware item 8",
+              "type": "debit",
+              "amount": 538,
+              "reference": "BILL-207",
+              "contraAccountId": 12
+            },
+            {
+              "id": 296,
+              "transactionId": 148,
+              "date": "2026-05-19",
+              "description": "Purchased office hardware item 9",
+              "type": "debit",
+              "amount": 549,
+              "reference": "BILL-208",
+              "contraAccountId": 12
+            },
+            {
+              "id": 304,
+              "transactionId": 152,
+              "date": "2026-05-19",
+              "description": "Purchased office hardware item 10",
+              "type": "debit",
+              "amount": 397,
+              "reference": "BILL-209",
+              "contraAccountId": 12
+            },
+            {
+              "id": 320,
+              "transactionId": 160,
+              "date": "2026-05-20",
+              "description": "Purchased office hardware item 11",
+              "type": "debit",
+              "amount": 612,
+              "reference": "BILL-210",
+              "contraAccountId": 12
+            },
+            {
+              "id": 328,
+              "transactionId": 164,
+              "date": "2026-05-20",
+              "description": "Purchased office hardware item 12",
+              "type": "debit",
+              "amount": 462,
+              "reference": "BILL-211",
+              "contraAccountId": 12
+            },
+            {
+              "id": 344,
+              "transactionId": 172,
+              "date": "2026-05-21",
+              "description": "Purchased office hardware item 13",
+              "type": "debit",
+              "amount": 1083,
+              "reference": "BILL-212",
+              "contraAccountId": 12
+            },
+            {
+              "id": 352,
+              "transactionId": 176,
+              "date": "2026-05-21",
+              "description": "Purchased office hardware item 14",
+              "type": "debit",
+              "amount": 1037,
+              "reference": "BILL-213",
+              "contraAccountId": 12
+            },
+            {
+              "id": 368,
+              "transactionId": 184,
+              "date": "2026-05-22",
+              "description": "Purchased office hardware item 15",
+              "type": "debit",
+              "amount": 327,
+              "reference": "BILL-214",
+              "contraAccountId": 12
+            },
+            {
+              "id": 376,
+              "transactionId": 188,
+              "date": "2026-05-22",
+              "description": "Purchased office hardware item 16",
+              "type": "debit",
+              "amount": 810,
+              "reference": "BILL-215",
+              "contraAccountId": 12
+            },
+            {
+              "id": 392,
+              "transactionId": 196,
+              "date": "2026-05-23",
+              "description": "Purchased office hardware item 17",
+              "type": "debit",
+              "amount": 538,
+              "reference": "BILL-216",
+              "contraAccountId": 12
+            },
+            {
+              "id": 400,
+              "transactionId": 200,
+              "date": "2026-05-23",
+              "description": "Purchased office hardware item 18",
+              "type": "debit",
+              "amount": 1072,
+              "reference": "BILL-217",
+              "contraAccountId": 12
+            },
+            {
+              "id": 416,
+              "transactionId": 208,
+              "date": "2026-05-24",
+              "description": "Purchased office hardware item 19",
+              "type": "debit",
+              "amount": 360,
+              "reference": "BILL-218",
+              "contraAccountId": 12
+            },
+            {
+              "id": 424,
+              "transactionId": 212,
+              "date": "2026-05-24",
+              "description": "Purchased office hardware item 20",
+              "type": "debit",
+              "amount": 1134,
+              "reference": "BILL-219",
+              "contraAccountId": 12
+            }
+          ]
+        },
+        {
+          "id": 542,
+          "name": "Maitenance",
+          "code": "1000",
+          "type": "expense",
+          "description": "Utility payment month ref 8",
+          "openingBalance": 0,
+          "entries": [
+            {
+              "id": 543,
+              "transactionId": 543,
+              "date": "2026-05-19",
+              "description": "",
+              "type": "debit",
+              "amount": 2000,
+              "reference": "",
+              "contraAccountId": 10
+            }
+          ],
+          "createdAt": "2026-05-19T10:44:04.563Z"
+        },
+        {
+          "id": 544,
+          "name": "CARD TEST",
+          "code": "2000",
+          "type": "asset",
+          "description": "Test Account",
+          "openingBalance": 0,
+          "entries": [
+            {
+              "id": 547,
+              "transactionId": 547,
+              "date": "2026-05-19",
+              "description": "Test Car",
+              "type": "credit",
+              "amount": 5000,
+              "reference": "IV20",
+              "contraAccountId": 545
+            },
+            {
+              "id": 548,
+              "transactionId": 548,
+              "date": "2026-05-19",
+              "description": "New Test Refresh",
+              "type": "credit",
+              "amount": 20000,
+              "reference": "",
+              "contraAccountId": 545
+            }
+          ],
+          "createdAt": "2026-05-19T11:03:57.743Z"
+        },
+        {
+          "id": 545,
+          "name": "Car",
+          "code": "3000",
+          "type": "expense",
+          "description": "Car Expenses",
+          "openingBalance": 0,
+          "entries": [
+            {
+              "id": 546,
+              "transactionId": 546,
+              "date": "2026-05-19",
+              "description": "Car Expenses",
+              "type": "debit",
+              "amount": 5000,
+              "reference": "",
+              "contraAccountId": 10
+            },
+            {
+              "id": 547,
+              "transactionId": 547,
+              "date": "2026-05-19",
+              "description": "Test Car",
+              "type": "debit",
+              "amount": 5000,
+              "reference": "IV20",
+              "contraAccountId": 544
+            },
+            {
+              "id": 548,
+              "transactionId": 548,
+              "date": "2026-05-19",
+              "description": "New Test Refresh",
+              "type": "debit",
+              "amount": 20000,
+              "reference": "",
+              "contraAccountId": 544
+            }
+          ],
+          "createdAt": "2026-05-19T11:12:25.893Z"
+        }
+      ],
+      "pin": "8080"
+    }
+  ],
+  "nextId": 549
+}

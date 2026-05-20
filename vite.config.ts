@@ -6,6 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
+    base: '/accpro/',
     plugins: [
       react(), 
       tailwindcss(),
@@ -17,19 +18,21 @@ export default defineConfig(() => {
           short_name: 'LedgerPro',
           description: 'Production-grade double-entry accounting system',
           theme_color: '#3b82f6',
+          scope: '/accpro/',
+          start_url: '/accpro/',
           icons: [
             {
-              src: 'pwa-192x192.png',
+              src: './pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: 'pwa-512x512.png',
+              src: './pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: 'pwa-512x512.png',
+              src: './pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any maskable'
