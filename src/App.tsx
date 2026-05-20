@@ -2627,9 +2627,14 @@ export default function App() {
               {/* Factory Reset */}
               <div className="pt-4 border-t border-[var(--border)]">
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm("CRITICAL: Wipe EVERYTHING?")) {
                       localStorage.clear();
+                      try {
+                        await saveAppData({ companies: [], nextId: 1 });
+                      } catch (err) {
+                        console.error("Failed to clear app data:", err);
+                      }
                       window.location.reload();
                     }
                   }}
