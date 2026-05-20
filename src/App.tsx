@@ -225,21 +225,21 @@ const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, d
       exit={{ scale: 0.95, opacity: 0 }}
       className={`w-full max-w-md bg-[var(--card)] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border)] ${className || ""}`}
     >
-      <div className="px-6 py-5 border-b border-[var(--border)] flex justify-between items-center">
-        <h3 className="text-xl font-bold text-[var(--text-bright)]">{title}</h3>
-        <button onClick={onClose} className="p-2 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--text)]">
-          <X size={20} />
+      <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center">
+        <h3 className="text-lg font-bold text-[var(--text-bright)]">{title}</h3>
+        <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--text)]">
+          <X size={18} />
         </button>
       </div>
-      <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto native-scroll">
+      <div className="p-5 space-y-4 max-h-[65vh] overflow-y-auto native-scroll">
         {children}
       </div>
-      <div className="p-6 bg-[var(--surface)] flex gap-3 border-t border-[var(--border)]">
-        <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] font-bold text-[var(--muted)] hover:bg-[var(--card)] transition-colors">Cancel</button>
+      <div className="p-3 bg-[var(--surface)] flex gap-3 border-t border-[var(--border)]">
+        <button onClick={onClose} className="flex-1 px-4 py-1.5 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--card)] transition-colors">Cancel</button>
         <button 
           onClick={onConfirm} 
           disabled={disabled}
-          className={`flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-lg shadow-blue-500/20 ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'hover:bg-blue-500 active:scale-95'}`}
+          className={`flex-1 px-4 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold transition-all shadow-lg shadow-blue-500/20 ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'hover:bg-blue-500 active:scale-95'}`}
         >
           {confirmText}
         </button>
@@ -398,7 +398,7 @@ const DateFilter = ({ range, setRange, custom, setCustom }: any) => {
               {range === 'custom' && (
                 <div className="p-3 border-t border-[var(--border)] bg-[var(--surface)] space-y-3">
                   <div className="space-y-1">
-                    <label className="text-[8px] font-black uppercase text-[var(--muted)]">Start Date</label>
+                    <label className="text-[8px] font-black text-[var(--muted)]">Start Date</label>
                     <input 
                       type="date" 
                       value={custom.start} 
@@ -407,7 +407,7 @@ const DateFilter = ({ range, setRange, custom, setCustom }: any) => {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[8px] font-black uppercase text-[var(--muted)]">End Date</label>
+                    <label className="text-[8px] font-black text-[var(--muted)]">End Date</label>
                     <input 
                       type="date" 
                       value={custom.end} 
@@ -425,7 +425,7 @@ const DateFilter = ({ range, setRange, custom, setCustom }: any) => {
   );
 };
 
-const LockScreen = ({ company, onUnlock }: { company: Company, onUnlock: (pin: string) => void }) => {
+const LockScreen = ({ company, onUnlock, onBack }: { company: Company, onUnlock: (pin: string) => void, onBack: () => void }) => {
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
 
@@ -457,7 +457,7 @@ const LockScreen = ({ company, onUnlock }: { company: Company, onUnlock: (pin: s
           </div>
           <div className="space-y-1">
             <h2 className="text-2xl font-black text-[var(--text-bright)]">{company.name}</h2>
-            <p className="text-[10px] uppercase font-black tracking-widest text-[var(--muted)]">Protected by PIN</p>
+            <p className="text-[10px] font-black tracking-wider text-[var(--muted)]">Protected by PIN</p>
           </div>
         </div>
 
@@ -473,17 +473,24 @@ const LockScreen = ({ company, onUnlock }: { company: Company, onUnlock: (pin: s
         <div className="grid grid-cols-3 gap-4">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "C"].map((key, i) => (
             <button
-              key={i}
-              onClick={() => {
-                if (key === "C") setPin("");
-                else if (key) handleKeypad(key);
-              }}
-              className={`w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black transition-all ${!key ? 'opacity-0' : 'bg-[var(--surface)] text-[var(--text-bright)] hover:bg-[var(--border)] active:scale-90 border border-[var(--border)]'}`}
+               key={i}
+               onClick={() => {
+                 if (key === "C") setPin("");
+                 else if (key) handleKeypad(key);
+               }}
+               className={`w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black transition-all ${!key ? 'opacity-0' : 'bg-[var(--surface)] text-[var(--text-bright)] hover:bg-[var(--border)] active:scale-90 border border-[var(--border)]'}`}
             >
               {key}
             </button>
           ))}
         </div>
+
+        <button
+          onClick={onBack}
+          className="text-xs font-bold text-[var(--muted)] hover:text-blue-500 mt-6 transition-colors flex items-center gap-1.5 mx-auto uppercase tracking-wider"
+        >
+          <ArrowLeft size={12} /> Switch Business / Exit
+        </button>
       </motion.div>
     </div>
   );
@@ -589,14 +596,14 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
            <h2 className="text-xl font-bold text-[var(--text-bright)] tracking-tight">Finance Center</h2>
-           <p className="text-[10px] text-[var(--muted)] uppercase font-black tracking-widest leading-none mt-1">Visualizing {activeCompany.name}</p>
+           <p className="text-[10px] text-[var(--muted)] font-bold tracking-wider leading-none mt-1">Visualizing {activeCompany.name}</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={handleExportReport}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
           >
-            <FileDown size={14} /> Export PDF
+            <Download size={14} /> Download
           </button>
           <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
         </div>
@@ -605,14 +612,14 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
       {/* Mini Nav */}
       <div className="flex bg-[var(--surface)] p-1.5 rounded-2xl border border-[var(--border)] overflow-x-auto no-scrollbar gap-1">
         {[
-          { id: 'pl', label: 'PROFIT & LOSS', icon: TrendingUp },
-          { id: 'bs', label: 'BALANCE SHEET', icon: Scale },
-          { id: 'tb', label: 'TRIAL BALANCE', icon: CheckCircle2 }
+          { id: 'pl', label: 'Profit & Loss', icon: TrendingUp },
+          { id: 'bs', label: 'Balance Sheet', icon: Scale },
+          { id: 'tb', label: 'Trial Balance', icon: CheckCircle2 }
         ].map(t => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id as any)}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all whitespace-nowrap ${activeTab === t.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-[var(--muted)] hover:text-[var(--text-bright)] hover:bg-[var(--border)]'}`}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black tracking-wider transition-all whitespace-nowrap ${activeTab === t.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-[var(--muted)] hover:text-[var(--text-bright)] hover:bg-[var(--border)]'}`}
           >
             <t.icon size={16} />
             {t.label}
@@ -624,13 +631,13 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
         <div className="bg-[var(--surface)] rounded-3xl border border-[var(--border)] overflow-hidden shadow-xl">
            <div className="p-6 border-b border-[var(--border)] bg-gradient-to-r from-blue-600/5 to-purple-600/5">
               <h3 className="text-xl font-black text-[var(--text-bright)]">Profit & Loss Statement</h3>
-              <p className="text-[10px] text-[var(--muted)] font-black uppercase">For the period ending {activeRange.end}</p>
+              <p className="text-[10px] text-[var(--muted)] font-black">For the period ending {activeRange.end}</p>
            </div>
            <div className="p-6 space-y-8">
               {/* Income */}
               <div className="space-y-4">
                  <div className="flex justify-between items-center border-b border-[var(--border)] pb-2">
-                    <span className="text-sm font-black text-[var(--muted)] uppercase">Operating Income</span>
+                    <span className="text-sm font-black text-[var(--muted)]">Operating Income</span>
                     <span className="text-sm font-black text-teal-400">Total Revenue</span>
                  </div>
                  {plData.revenues.map((r, i) => (
@@ -648,7 +655,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
               {/* Expenses */}
               <div className="space-y-4">
                  <div className="flex justify-between items-center border-b border-[var(--border)] pb-2">
-                    <span className="text-sm font-black text-[var(--muted)] uppercase">Operating Expenses</span>
+                    <span className="text-sm font-black text-[var(--muted)]">Operating Expenses</span>
                     <span className="text-sm font-black text-orange-400">Total Spent</span>
                  </div>
                  {plData.expenses.map((e, i) => (
@@ -670,13 +677,13 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
                        {plData.netIncome >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                     </div>
                     <div>
-                       <p className="text-[9px] font-black uppercase tracking-widest opacity-80 leading-none mb-1">Bottom Line</p>
+                       <p className="text-[9px] font-bold tracking-wider opacity-80 leading-none mb-1">Bottom Line</p>
                        <h3 className="text-base font-black leading-none">{plData.netIncome >= 0 ? 'Net Profit' : 'Net Loss'}</h3>
                     </div>
                  </div>
                  <div className="text-center sm:text-right w-full sm:w-auto mt-2 sm:mt-0">
                     <p className="text-2xl sm:text-2xl font-black tracking-tighter truncate leading-none mb-1">{formatCurrency(plData.netIncome)}</p>
-                    <p className="text-[9px] font-bold opacity-60 uppercase">Margin: {plData.totalRev > 0 ? ((plData.netIncome / plData.totalRev) * 100).toFixed(1) : '0'}%</p>
+                    <p className="text-[9px] font-bold opacity-60">Margin: {plData.totalRev > 0 ? ((plData.netIncome / plData.totalRev) * 100).toFixed(1) : '0'}%</p>
                  </div>
               </div>
            </div>
@@ -688,7 +695,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
            {/* Assets */}
            <div className="bg-[var(--surface)] rounded-3xl border border-[var(--border)] overflow-hidden">
               <div className="p-5 border-b border-[var(--border)] flex justify-between items-center bg-teal-500/5">
-                 <h4 className="font-black text-[var(--muted)] uppercase text-xs">Total Assets</h4>
+                 <h4 className="font-black text-[var(--muted)] text-xs">Total Assets</h4>
                  <span className="text-lg font-black text-teal-400">{formatCurrency(accountsByType('asset').reduce((s, a: any) => s + getAccountBalance(a, activeRange.end), 0))}</span>
               </div>
               <div className="p-4 space-y-2">
@@ -704,7 +711,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
            {/* Liabilities & Equity */}
            <div className="bg-[var(--surface)] rounded-3xl border border-[var(--border)] overflow-hidden">
               <div className="p-5 border-b border-[var(--border)] flex justify-between items-center bg-orange-500/5">
-                 <h4 className="font-black text-[var(--muted)] uppercase text-xs">Total Liabilities & Equity</h4>
+                 <h4 className="font-black text-[var(--muted)] text-xs">Total Liabilities & Equity</h4>
                  <span className="text-lg font-black text-orange-400">
                     {formatCurrency(
                         accountsByType('liability').reduce((s, a: any) => s + getAccountBalance(a, activeRange.end), 0) + 
@@ -715,7 +722,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
               </div>
               <div className="p-4 space-y-4">
                  <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-[var(--muted)] ml-1 mb-2">Liabilities</p>
+                    <p className="text-[10px] font-black text-[var(--muted)] ml-1 mb-2">Liabilities</p>
                     {accountsByType('liability').map((a: any) => (
                         <div key={a.id} className="flex justify-between items-center p-3 hover:bg-[var(--bg)] rounded-xl transition-colors">
                            <span className="text-sm font-medium text-[var(--text)]">{a.name}</span>
@@ -724,7 +731,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
                     ))}
                  </div>
                  <div className="space-y-1 pt-4 border-t border-[var(--border)]">
-                    <p className="text-[10px] font-black uppercase text-[var(--muted)] ml-1 mb-2">Equity</p>
+                    <p className="text-[10px] font-black text-[var(--muted)] ml-1 mb-2">Equity</p>
                     {accountsByType('equity').map((a: any) => (
                         <div key={a.id} className="flex justify-between items-center p-3 hover:bg-[var(--bg)] rounded-xl transition-colors">
                            <span className="text-sm font-medium text-[var(--text)]">{a.name}</span>
@@ -746,9 +753,9 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
            <table className="w-full text-left text-sm border-collapse">
               <thead>
                  <tr className="bg-[var(--bg)]">
-                    <th className="p-4 text-[10px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)]">Account Description</th>
-                    <th className="p-4 text-[10px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)] text-right">Debit Balance</th>
-                    <th className="p-4 text-[10px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)] text-right">Credit Balance</th>
+                    <th className="p-4 text-[10px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account Description</th>
+                    <th className="p-4 text-[10px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit Balance</th>
+                    <th className="p-4 text-[10px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit Balance</th>
                  </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
@@ -756,7 +763,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
                     <tr key={row.id} className="hover:bg-[var(--bg)] transition-colors">
                        <td className="p-4">
                           <div className="font-bold text-[var(--text-bright)]">{row.name}</div>
-                          <div className="text-[10px] text-[var(--muted)] font-bold">{row.code} ({row.type})</div>
+                          <div className="text-[10px] text-[var(--muted)] font-bold">{row.code} ({row.type.charAt(0).toUpperCase() + row.type.slice(1)})</div>
                        </td>
                        <td className="p-4 text-right font-mono font-bold text-teal-400">
                           {row.debit > 0 ? formatCurrency(row.debit) : '-'}
@@ -769,7 +776,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
               </tbody>
               <tfoot className="bg-[var(--bg)] font-black">
                  <tr>
-                    <td className="p-4 uppercase tracking-tighter">Trial Totals</td>
+                    <td className="p-4 tracking-tighter">Trial Totals</td>
                     <td className="p-4 text-right border-t-2 border-teal-500 text-teal-400">
                        {formatCurrency(tbData.reduce((s: any, r: any) => s + r.debit, 0))}
                     </td>
@@ -876,7 +883,7 @@ const JournalEntryModal = ({
 
   return (
     <Modal 
-      title={formData.transactionId ? "Edit Transaction" : "Multiline General Journal"} 
+      title={formData.transactionId ? "Edit Entry" : "Add"} 
       onConfirm={onSave} 
       onClose={onClose}
       confirmText={isBalanced ? (formData.transactionId ? "Update Entry" : "Post Entry") : "Unbalanced"}
@@ -886,7 +893,7 @@ const JournalEntryModal = ({
         {/* Main Header */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-[10px] font-black text-[var(--muted)] uppercase">Date</label>
+            <label className="text-[10px] font-black text-[var(--muted)]">Date</label>
             <input 
               type="date" 
               value={formData.date || ""} 
@@ -895,7 +902,7 @@ const JournalEntryModal = ({
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-black text-[var(--muted)] uppercase">Ref</label>
+            <label className="text-[10px] font-black text-[var(--muted)]">Ref</label>
             <input 
               type="text" 
               placeholder="GJ-..."
@@ -908,7 +915,7 @@ const JournalEntryModal = ({
 
         {/* Action Bar */}
         <div className="flex justify-between items-center bg-[var(--surface)] p-2 rounded-xl border border-[var(--border)]">
-          <div className="text-[9px] font-black uppercase text-[var(--muted)] ml-2">
+          <div className="text-[9px] font-black text-[var(--muted)] ml-2">
             {items.length} Lines
           </div>
           <div className="flex items-center gap-2">
@@ -953,10 +960,10 @@ const JournalEntryModal = ({
           <table className="w-full text-left text-xs border-collapse">
             <thead className="bg-[var(--card)] sticky top-0 z-10">
               <tr>
-                <th className="p-2.5 text-[9px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)]">Account</th>
-                <th className="p-2.5 text-[9px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
-                <th className="p-2.5 text-[9px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
-                <th className="p-2.5 text-[9px] font-black uppercase text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
+                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account</th>
+                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
+                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
+                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
@@ -1000,16 +1007,16 @@ const JournalEntryModal = ({
         {/* Footer Totals */}
         <div className="p-3 bg-[var(--bg)] rounded-xl border border-dashed border-[var(--border)] flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-[8px] font-black uppercase text-[var(--muted)]">DR</span>
+            <span className="text-[8px] font-black text-[var(--muted)]">Dr</span>
             <span className="text-teal-400 font-bold text-xs tracking-tight">{formatCurrency(totalDr)}</span>
           </div>
           <div className="flex flex-col items-center">
-             <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm border ${isBalanced ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+             <div className={`px-3 py-1 rounded-full text-[9px] font-black tracking-tighter shadow-sm border ${isBalanced ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
               {isBalanced ? 'Balanced' : `-${formatCurrency(Math.abs(totalDr - totalCr))}`}
             </div>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-[8px] font-black uppercase text-[var(--muted)]">CR</span>
+            <span className="text-[8px] font-black text-[var(--muted)]">Cr</span>
             <span className="text-orange-400 font-bold text-xs tracking-tight">{formatCurrency(totalCr)}</span>
           </div>
         </div>
@@ -1026,7 +1033,9 @@ const JournalEntryModal = ({
             >
               <div className="space-y-4 max-w-sm mx-auto w-full">
                 <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-lg font-black uppercase tracking-tight text-blue-500">Edit Line Item</h4>
+                  <h4 className="text-lg font-black uppercase tracking-tight text-blue-500">
+                    {items.some((i: any) => i.id === editingLine.id) ? "Edit Entry" : "Add"}
+                  </h4>
                   <button onClick={() => setEditingLine(null)} className="p-2 hover:bg-[var(--surface)] text-[var(--muted)] rounded-full">
                     <X size={18} />
                   </button>
@@ -1098,12 +1107,22 @@ const JournalEntryModal = ({
                   </div>
                 </div>
 
-                <button 
-                  onClick={handleApplyLine}
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all mt-2"
-                >
-                  Apply Line
-                </button>
+                <div className="flex gap-3 mt-2">
+                  <button 
+                    type="button"
+                    onClick={() => setEditingLine(null)}
+                    className="flex-1 py-2 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--surface)] transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleApplyLine}
+                    className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+                  >
+                    Apply Line
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -1129,14 +1148,14 @@ const SingleEntryModal = ({
 
   return (
     <Modal 
-      title={formData.transactionId ? "Edit Entry" : "Double Entry Ledger"} 
+      title={formData.transactionId ? "Edit Entry" : "Add"} 
       onConfirm={onSave} 
       onClose={onClose}
       confirmText={formData.transactionId ? "Update Entry" : "Post Entry"}
     >
       <div className="space-y-4">
         <div className="space-y-1.5 focus-within:z-10">
-          <label className="text-[10px] font-black text-[var(--muted)] uppercase">Transaction Date</label>
+          <label className="text-[10px] font-black text-[var(--muted)]">Transaction Date</label>
           <input type="date" value={formData.date || ""} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
         </div>
         
@@ -1171,16 +1190,16 @@ const SingleEntryModal = ({
                 creditAccountId: formData.debitAccountId || ""
               });
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase text-blue-400 hover:text-blue-300 bg-blue-500/0 hover:bg-blue-500/5 border border-blue-500/10 rounded-xl transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black text-blue-400 hover:text-blue-300 bg-blue-500/0 hover:bg-blue-500/5 border border-blue-500/10 rounded-xl transition-all active:scale-95"
             title="Swap Debit and Credit Accounts"
           >
             <ArrowUpDown size={12} />
-            Reverse DR/CR (Swap Accounts)
+            Reverse Dr/Cr (Swap Accounts)
           </button>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[10px] font-black text-[var(--muted)] uppercase">Amount</label>
+          <label className="text-[10px] font-black text-[var(--muted)]">Amount</label>
           <input 
             type="number" 
             placeholder="0.00" 
@@ -1191,7 +1210,7 @@ const SingleEntryModal = ({
         </div>
 
         <div className="space-y-1.5">
-           <label className="text-[10px] font-black text-[var(--muted)] uppercase">Notes / Reference</label>
+           <label className="text-[10px] font-black text-[var(--muted)]">Notes / Reference</label>
            <input type="text" placeholder="Description" value={formData.description || ""} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
            <input type="text" placeholder="Reference #" value={formData.reference || ""} onChange={e => setFormData({...formData, reference: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 mt-2 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
         </div>
@@ -1258,6 +1277,7 @@ export default function App() {
   const [dashboardSearch, setDashboardSearch] = useState("");
   const [transactionToDelete, setTransactionToDelete] = useState<number | null>(null);
   const [accountToDelete, setAccountToDelete] = useState<number | null>(null);
+  const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
   const [journalSort, setJournalSort] = useState<'desc' | 'asc'>('desc');
   const [dashboardSort, setDashboardSort] = useState<'desc' | 'asc'>('desc');
   const [accountSort, setAccountSort] = useState<'name_asc' | 'name_desc' | 'code_asc'>('name_asc');
@@ -1378,14 +1398,10 @@ export default function App() {
     notify("Company updated");
   };
 
-  const handleDeleteCompany = (id: number) => {
-    if (!window.confirm("Delete this company and all its data?")) return;
-    setData(prev => ({ ...prev, companies: prev.companies.filter(c => c.id !== id) }));
-    if (selectedCompanyId === id) {
-      setSelectedCompanyId(null);
-      setView('companies');
-    }
-    notify("Company deleted", "error");
+  const handleDeleteCompanyClick = (comp: Company) => {
+    setCompanyToDelete(comp);
+    setFormData({});
+    setShowModal('delete_company_confirm');
   };
 
   const handleCreateAccount = () => {
@@ -1497,7 +1513,7 @@ export default function App() {
     const { items, date, transactionId, transactionRef, debitAccountId, creditAccountId, amount, description, reference } = formData;
     
     // Check if it's a single entry save
-    if (debitAccountId && creditAccountId && amount) {
+    if ((showModal === 'new_entry_single' || showModal === 'edit_entry_single') && debitAccountId && creditAccountId && amount) {
       const amt = parseFloat(amount);
       const txnId = transactionId || data.nextId;
       
@@ -1568,7 +1584,11 @@ export default function App() {
       
       const newEntriesByAccount: { [key: number]: Entry[] } = {};
 
-      items.forEach((item: any) => {
+      const isTwoLine = items.length === 2;
+      const accId0 = parseInt(items[0]?.accountId);
+      const accId1 = parseInt(items[1]?.accountId);
+
+      items.forEach((item: any, index: number) => {
         const accId = parseInt(item.accountId);
         if (isNaN(accId)) return;
 
@@ -1576,6 +1596,11 @@ export default function App() {
         const itemAmount = isDebit ? parseFloat(item.debit) : parseFloat(item.credit);
         
         if (itemAmount <= 0) return;
+
+        let contraAccountId = -1;
+        if (isTwoLine) {
+          contraAccountId = index === 0 ? accId1 : accId0;
+        }
 
         const entry: Entry = {
           id: currentNextId++,
@@ -1585,7 +1610,7 @@ export default function App() {
           type: isDebit ? 'debit' : 'credit',
           amount: itemAmount,
           reference: item.ref || transactionRef || "",
-          contraAccountId: -1 // Multi-split marker
+          contraAccountId
         };
 
         if (!newEntriesByAccount[accId]) newEntriesByAccount[accId] = [];
@@ -1771,12 +1796,18 @@ export default function App() {
           <span className="text-[10px] uppercase tracking-widest text-[var(--muted)] font-bold">Workspace</span>
           <h2 className="text-2xl font-bold text-[var(--text-bright)]">Businesses</h2>
         </div>
-        <button 
-          onClick={() => { setFormData({}); setShowModal('new_company'); }}
-          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all active:scale-95"
-        >
-          <Plus size={14} /> New Business
-        </button>
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/20 transition-all active:scale-95 cursor-pointer select-none">
+            <Upload size={14} /> Import Backup
+            <input type="file" accept=".json" onChange={importData} className="hidden" />
+          </label>
+          <button 
+            onClick={() => { setFormData({}); setShowModal('new_company'); }}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all active:scale-95"
+          >
+            <Plus size={14} /> New Business
+          </button>
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -1809,7 +1840,7 @@ export default function App() {
             <div className="flex items-center gap-2">
               <EllipsisMenu options={[
                 { label: 'Edit', icon: Edit3, onClick: () => { setFormData(c); setShowModal('edit_company'); } },
-                { label: 'Delete', icon: Trash2, onClick: () => handleDeleteCompany(c.id), danger: true }
+                { label: 'Delete', icon: Trash2, onClick: () => handleDeleteCompanyClick(c), danger: true }
               ]} />
               <ChevronRight className="text-[var(--muted)] group-hover:translate-x-1 transition-transform" size={20} />
             </div>
@@ -1822,11 +1853,17 @@ export default function App() {
             </div>
             <div className="space-y-2">
                <p className="text-[var(--text-bright)] font-bold">No businesses found</p>
-               <p className="text-sm text-[var(--muted)]">Create your first company to start bookkeeping.</p>
+               <p className="text-sm text-[var(--muted)]">Create your first company or import a backup to start bookkeeping.</p>
             </div>
-            <button onClick={() => setShowModal('new_company')} className="btn-primary mx-auto">
-               <Plus size={20} /> Add Business
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto">
+              <button onClick={() => setShowModal('new_company')} className="btn-primary w-full sm:w-auto justify-center">
+                 <Plus size={18} /> Add Business
+              </button>
+              <label className="flex items-center justify-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl cursor-pointer transition-all text-xs tracking-wider uppercase select-none shadow-lg shadow-purple-500/20 active:scale-95 w-full sm:w-auto">
+                 <Upload size={18} /> Import Backup
+                 <input type="file" accept=".json" onChange={importData} className="hidden" />
+              </label>
+            </div>
           </div>
         )}
       </div>
@@ -1887,44 +1924,33 @@ export default function App() {
 
   const handleCreateReversal = (txId: number) => {
     if (!activeCompany) return;
-    const txnItems: any[] = [];
-    let txnDate = formatDate(new Date()); // Default reversal to today's date
-    let txnRef = "";
-    let desc = "";
 
-    activeCompany.accounts.forEach(acc => {
-      acc.entries.filter(e => e.transactionId === txId).forEach(e => {
-        txnRef = e.reference ? `REV-${e.reference}` : "REV-ENTRY";
-        desc = e.description ? `Reversal of: ${e.description}` : "Reversal Entry";
+    setData(prev => {
+      const updatedCompanies = prev.companies.map(c => {
+        if (c.id !== selectedCompanyId) return c;
 
-        // Reverse Debit <-> Credit
-        const reversedType = e.type === 'debit' ? 'credit' : 'debit';
-
-        txnItems.push({
-          id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          accountId: acc.id.toString(),
-          detail: e.description ? `Reversal of: ${e.description}` : "Reversal Line",
-          ref: e.reference ? `REV-${e.reference}` : "REV-LINE",
-          debit: reversedType === 'debit' ? e.amount.toString() : '0',
-          credit: reversedType === 'credit' ? e.amount.toString() : '0',
-          type: reversedType
+        const updatedAccounts = c.accounts.map(acc => {
+          const updatedEntries = acc.entries.map(e => {
+            if (e.transactionId === txId) {
+              const flippedType: 'debit' | 'credit' = e.type === 'debit' ? 'credit' : 'debit';
+              const refStr = e.reference || "";
+              const flippedRef = refStr.startsWith('REV-') ? refStr.substring(4) : `REV-${refStr}`;
+              return {
+                ...e,
+                type: flippedType,
+                reference: flippedRef
+              };
+            }
+            return e;
+          });
+          return { ...acc, entries: updatedEntries };
         });
+        return { ...c, accounts: updatedAccounts };
       });
+      return { ...prev, companies: updatedCompanies };
     });
 
-    setFormData({
-      date: txnDate,
-      transactionRef: txnRef,
-      items: txnItems,
-      debitAccountId: "",
-      creditAccountId: "",
-      amount: "",
-      description: desc,
-      reference: txnRef
-    });
-    
-    setShowModal('new_entry');
-    notify("Reversal entry prepared. Review and post to record.");
+    notify("Transaction reversed (swapped DR/CR)");
   };
 
   const renderDashboard = () => {
@@ -1959,19 +1985,15 @@ export default function App() {
     })();
 
     // Get latest 10 transactions across all accounts
-    const allEntries: (Entry & { accountName: string; accountId: number })[] = [];
+    const allEntries: (Entry & { accountName: string; accountId: number; accountType: AccountType })[] = [];
     activeCompany.accounts.forEach(acc => {
       acc.entries.forEach(e => {
-        allEntries.push({ ...e, accountName: acc.name, accountId: acc.id });
+        allEntries.push({ ...e, accountName: acc.name, accountId: acc.id, accountType: acc.type });
       });
     });
 
-    const now = new Date();
-    const firstDay = formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
-    const lastDay = formatDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
-
     const latestEntries = [...allEntries]
-      .filter(e => e.date >= firstDay && e.date <= lastDay)
+      .filter(e => e.date >= activeRange.start && e.date <= activeRange.end)
       .filter(e => 
         e.description.toLowerCase().includes(dashboardSearch.toLowerCase()) || 
         e.accountName.toLowerCase().includes(dashboardSearch.toLowerCase()) ||
@@ -1988,7 +2010,7 @@ export default function App() {
         {pinAlert}
         <div className="flex justify-between items-start mb-2">
           <div className="flex flex-col gap-0.1">
-             <span className="text-[8px] uppercase tracking-widest text-[var(--muted)] font-black">Overview</span>
+              <span className="text-[8px] tracking-wider text-[var(--muted)] font-black">Overview</span>
              <h2 className="text-lg font-bold text-[var(--text-bright)]">{activeCompany.name}</h2>
           </div>
           <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
@@ -1997,25 +2019,25 @@ export default function App() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
-            <p className="text-[8px] font-black text-[var(--muted)] uppercase">Opening</p>
+            <p className="text-[8px] font-black text-[var(--muted)]">Opening</p>
             <h3 className="text-[11px] font-bold text-[var(--text-bright)] mt-0.5 truncate leading-none">
               {formatCurrency(activeCompany.accounts.reduce((s, a) => s + getAccountBalance(a, formatDate(new Date(parseDate(activeRange.start).getTime() - 86400000))), 0))}
             </h3>
           </div>
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
-            <p className="text-[8px] font-black text-teal-400 uppercase">Debit (+)</p>
+            <p className="text-[8px] font-black text-teal-400">Debit (+)</p>
             <h3 className="text-[11px] font-bold text-[var(--text-bright)] mt-0.5 truncate leading-none">
               {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0))}
             </h3>
           </div>
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
-            <p className="text-[8px] font-black text-orange-400 uppercase">Credit (-)</p>
+            <p className="text-[8px] font-black text-orange-400">Credit (-)</p>
             <h3 className="text-[11px] font-bold text-[var(--text-bright)] mt-0.5 truncate leading-none">
               {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0))}
             </h3>
           </div>
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-blue-500/20 bg-blue-500/5 shadow-sm">
-            <p className="text-[8px] font-black text-blue-400 uppercase">Closing</p>
+            <p className="text-[8px] font-black text-blue-400">Closing</p>
             <h3 className="text-[11px] font-black text-[var(--text-bright)] mt-0.5 truncate leading-none">
               {formatCurrency(activeCompany.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0))}
             </h3>
@@ -2057,6 +2079,8 @@ export default function App() {
           <div className="space-y-2">
             {latestEntries.map(entry => {
               const contra = activeCompany.accounts.find(a => a.id === entry.contraAccountId);
+              const typeInfo = ACCOUNT_TYPES.find(t => t.value === entry.accountType);
+              const isPositiveEffect = entry.type === typeInfo?.normal;
               return (
                 <div 
                   key={`${entry.accountId}-${entry.id}`} 
@@ -2065,8 +2089,8 @@ export default function App() {
                 >
                   <div className="flex justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[8px] font-black text-[var(--muted)] bg-[var(--bg)] px-1.5 py-0.5 rounded border border-[var(--border)] uppercase">{entry.date}</span>
-                      {entry.reference && <span className="text-[8px] font-black text-blue-400 border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 rounded uppercase">{entry.reference}</span>}
+                      <span className="text-[8px] font-black text-[var(--muted)] bg-[var(--bg)] px-1.5 py-0.5 rounded border border-[var(--border)]">{entry.date}</span>
+                      {entry.reference && <span className="text-[8px] font-black text-blue-400 border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 rounded">{entry.reference}</span>}
                     </div>
                     <EllipsisMenu options={[
                        { label: 'Edit', icon: Edit3, onClick: () => handleEditTransaction(entry.transactionId) },
@@ -2078,15 +2102,15 @@ export default function App() {
                   <div className="flex justify-between items-center">
                     <div className="flex-1 pr-4">
                       <p className="text-sm font-bold text-[var(--text-bright)] leading-tight line-clamp-1">{entry.description || 'General Entry'}</p>
-                      <p className="text-[9px] text-[var(--muted)] font-black uppercase flex items-center gap-1.5 mt-0.5">
+                      <p className="text-[9px] text-[var(--muted)] font-black flex items-center gap-1.5 mt-0.5">
                         <span className="truncate max-w-[80px] sm:max-w-[150px]">{entry.accountName}</span>
                         <span className="opacity-40">↔</span>
                         <span className="text-blue-400/80 truncate max-w-[80px] sm:max-w-[150px]">{contra?.name || 'External'}</span>
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className={`text-sm font-black ${entry.type === 'debit' ? 'text-teal-400' : 'text-orange-400'}`}>
-                        {entry.type === 'debit' ? '+' : '-'}{formatCurrency(entry.amount)}
+                      <p className={`text-sm font-black ${isPositiveEffect ? 'text-teal-400' : 'text-orange-400'}`}>
+                        {isPositiveEffect ? '+' : '-'}{formatCurrency(entry.amount)}
                       </p>
                     </div>
                   </div>
@@ -2116,11 +2140,36 @@ export default function App() {
         return a.code.localeCompare(b.code);
       }) || [];
 
+    const companyOpening = activeCompany?.accounts.reduce((s, a) => s + getAccountBalance(a, formatDate(new Date(parseDate(activeRange.start).getTime() - 86400000))), 0) || 0;
+    const companyDebit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0) || 0;
+    const companyCredit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0) || 0;
+    const companyClosing = activeCompany?.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0) || 0;
+
     return (
       <div className="pt-1 pb-20 px-4 max-w-2xl mx-auto space-y-4 animate-slide-up">
         <div className="flex flex-col gap-0.5 mb-2">
-          <span className="text-[9px] uppercase tracking-widest text-[var(--muted)] font-black">Directory</span>
+          <span className="text-[9px] tracking-wider text-[var(--muted)] font-black">Directory</span>
           <h2 className="text-2xl font-black text-[var(--text-bright)]">Chart of Accounts</h2>
+        </div>
+
+        {/* Live Data Cards (Stats Grid) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
+            <p className="text-[8px] font-black text-[var(--muted)]">Opening</p>
+            <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(companyOpening)}</p>
+          </div>
+          <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
+            <p className="text-[8px] font-black text-teal-400">Debit (+)</p>
+            <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(companyDebit)}</p>
+          </div>
+          <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
+            <p className="text-[8px] font-black text-orange-400">Credit (-)</p>
+            <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(companyCredit)}</p>
+          </div>
+          <div className="p-2.5 bg-[var(--surface)] border border-blue-500/20 bg-blue-500/5 rounded-xl shadow-sm">
+            <p className="text-[8px] font-black text-blue-400">Closing</p>
+            <p className="text-xs font-black text-[var(--text-bright)] truncate">{formatCurrency(companyClosing)}</p>
+          </div>
         </div>
 
         <div className="flex gap-2 h-11 items-center bg-[var(--bg)] py-1 sticky top-14 z-20">
@@ -2171,9 +2220,9 @@ export default function App() {
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-[var(--text-bright)] leading-tight">{acc.name}</span>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] text-[var(--muted)] font-black uppercase tracking-tight">{acc.code}</span>
+                    <span className="text-[10px] text-[var(--muted)] font-black tracking-tight">{acc.code}</span>
                     <span className="w-1 h-1 rounded-full bg-[var(--border)]"></span>
-                    <span className="text-[9px] font-black text-blue-500/80 uppercase">{acc.type}</span>
+                    <span className="text-[9px] font-black text-blue-500/80 capitalize">{acc.type}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -2199,6 +2248,7 @@ export default function App() {
   const renderJournal = () => {
     if (!activeAccount) return null;
     
+    const typeInfo = ACCOUNT_TYPES.find(t => t.value === activeAccount.type);
     const entriesWithRB = getSortedEntriesWithRunningBalance(activeAccount, activeRange.start, activeRange.end);
     
     const filteredEntries = entriesWithRB.filter(e => {
@@ -2230,11 +2280,12 @@ export default function App() {
       const rows = sortedForExport.map(e => {
           const contra = activeCompany?.accounts.find(a => a.id === e.contraAccountId);
           const contraStr = contra ? `${contra.name} (${contra.code})` : 'External';
+          const isNormalDebit = typeInfo?.normal === 'debit';
           return [
               `${e.date}\n${e.description}`,
               contraStr,
-              e.type === 'debit' ? `(+) ${formatCurrency(e.amount)}` : '-',
-              e.type === 'credit' ? `(-) ${formatCurrency(e.amount)}` : '-',
+              e.type === 'debit' ? `${isNormalDebit ? '(+)' : '(-)'} ${formatCurrency(e.amount)}` : '-',
+              e.type === 'credit' ? `${!isNormalDebit ? '(+)' : '(-)'} ${formatCurrency(e.amount)}` : '-',
               formatCurrency(e.runningBalance)
           ];
       });
@@ -2323,19 +2374,19 @@ export default function App() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
-            <p className="text-[8px] font-black text-[var(--muted)] uppercase">Opening</p>
+            <p className="text-[8px] font-black text-[var(--muted)]">Opening</p>
             <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(opening)}</p>
           </div>
           <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
-            <p className="text-[8px] font-black text-teal-400 uppercase">Debit (+)</p>
+            <p className="text-[8px] font-black text-teal-400">Debit (+)</p>
             <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(totalDebit)}</p>
           </div>
           <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm">
-            <p className="text-[8px] font-black text-orange-400 uppercase">Credit (-)</p>
+            <p className="text-[8px] font-black text-orange-400">Credit (-)</p>
             <p className="text-xs font-bold text-[var(--text-bright)] truncate">{formatCurrency(totalCredit)}</p>
           </div>
           <div className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl border-blue-500/20 bg-blue-500/5 shadow-sm">
-            <p className="text-[8px] font-black text-blue-400 uppercase">Closing</p>
+            <p className="text-[8px] font-black text-blue-400">Closing</p>
             <p className="text-xs font-black text-[var(--text-bright)] truncate">{formatCurrency(closing)}</p>
           </div>
         </div>
@@ -2373,9 +2424,14 @@ export default function App() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className={`text-sm font-black ${entry.type === 'debit' ? 'text-teal-400' : 'text-orange-400'}`}>
-                      {entry.type === 'debit' ? '+' : '-'}{formatCurrency(entry.amount)}
-                    </p>
+                    {(() => {
+                      const isPositiveEffect = entry.type === typeInfo?.normal;
+                      return (
+                        <p className={`text-sm font-black ${isPositiveEffect ? 'text-teal-400' : 'text-orange-400'}`}>
+                          {isPositiveEffect ? '+' : '-'}{formatCurrency(entry.amount)}
+                        </p>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -2437,6 +2493,14 @@ export default function App() {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-[var(--muted)] uppercase">Industry</label>
                 <input type="text" placeholder="e.g. Retail" value={formData.industry || ""} onChange={e => setFormData({...formData, industry: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
+              </div>
+              
+              <div className="pt-4 border-t border-[var(--border)] text-center space-y-2">
+                <p className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider">Or restore from existing</p>
+                <label className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl cursor-pointer transition-all text-xs tracking-wider uppercase select-none shadow-lg shadow-purple-500/20 active:scale-95 w-full">
+                  <Upload size={14} /> Import Backup File
+                  <input type="file" accept=".json" onChange={(e) => { importData(e); setShowModal(null); }} className="hidden" />
+                </label>
               </div>
             </div>
           </Modal>
@@ -2700,7 +2764,7 @@ export default function App() {
                   </div>
                   <button 
                     onClick={() => { setView('companies'); setShowModal(null); }}
-                    className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-500 py-3 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500/10 transition-all"
+                    className="w-full flex items-center justify-center gap-2 text-xs font-normal text-blue-500 py-2.5 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500/10 transition-all"
                   >
                     <Building2 size={14} /> Manage All Businesses
                   </button>
@@ -2711,17 +2775,132 @@ export default function App() {
               <div className="pt-4 border-t border-[var(--border)]">
                 <button 
                   onClick={() => {
-                    if (window.confirm("CRITICAL: Wipe EVERYTHING?")) {
-                      localStorage.clear();
-                      window.location.reload();
-                    }
+                    setFormData({});
+                    setShowModal('factory_reset_confirm');
                   }}
-                  className="w-full py-3 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-500/5"
+                  className="w-full py-2 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-500/5"
                 >
-                  Factory Reset System
+                  Delete All Databases
                 </button>
               </div>
             </div>
+          </Modal>
+        )}
+        {showModal === 'delete_company_confirm' && companyToDelete && (
+          <Modal 
+            key="modal_delete_company" 
+            title="Delete Business" 
+            confirmText="Permanently Delete" 
+            onConfirm={() => {
+              if (companyToDelete.pin) {
+                if (formData.pinConfirm !== companyToDelete.pin) {
+                  return notify("Invalid security PIN", "error");
+                }
+              }
+              const compName = companyToDelete.name;
+              setData(prev => ({ ...prev, companies: prev.companies.filter(c => c.id !== companyToDelete.id) }));
+              if (selectedCompanyId === companyToDelete.id) {
+                setSelectedCompanyId(null);
+                setView('companies');
+              }
+              setCompanyToDelete(null);
+              setShowModal(null);
+              setFormData({});
+              notify(`Business "${compName}" deleted`, "error");
+            }} 
+            onClose={() => { setCompanyToDelete(null); setShowModal(null); setFormData({}); }}
+          >
+             <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
+                  <Trash2 size={32} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-[var(--text-bright)]">Confirm Deletion</h4>
+                  <p className="text-xs text-[var(--muted)] mt-1">
+                    Are you sure you want to delete <span className="text-red-500 font-bold">"{companyToDelete.name}"</span>?
+                  </p>
+                  <p className="text-[10px] text-red-400 font-medium tracking-wide uppercase mt-1">
+                    This action is final and will erase all associated financial journals & ledger accounts.
+                  </p>
+                </div>
+
+                {companyToDelete.pin && (
+                  <div className="space-y-1.5 text-left max-w-xs mx-auto pt-2">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider block">
+                      Enter Company PIN to Authorize Deletion
+                    </label>
+                    <input 
+                      type="password" 
+                      maxLength={4}
+                      placeholder="Enter 4-digit PIN"
+                      value={formData.pinConfirm || ""}
+                      onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
+                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-center text-sm font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-xs placeholder:font-normal placeholder:tracking-normal text-center"
+                    />
+                  </div>
+                )}
+             </div>
+          </Modal>
+        )}
+        {showModal === 'factory_reset_confirm' && (
+          <Modal 
+            key="modal_factory_reset" 
+            title="Delete All Databases" 
+            confirmText="Permanently Reset" 
+            onConfirm={async () => {
+              if (activeCompany?.pin) {
+                if (formData.pinConfirm !== activeCompany.pin) {
+                  return notify("Invalid security PIN", "error");
+                }
+              }
+              localStorage.clear();
+              try {
+                const req = indexedDB.deleteDatabase(DB_NAME);
+                req.onsuccess = () => {
+                  window.location.reload();
+                };
+                req.onerror = () => {
+                  window.location.reload();
+                };
+                req.onblocked = () => {
+                  window.location.reload();
+                };
+              } catch {
+                window.location.reload();
+              }
+            }} 
+            onClose={() => { setShowModal(null); setFormData({}); }}
+          >
+             <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
+                  <AlertCircle size={32} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-[var(--text-bright)]">System Reset Confirmation</h4>
+                  <p className="text-xs text-[var(--muted)] mt-1">
+                    This will permanently drop the database and remove all business ledgers, journals, and credentials.
+                  </p>
+                  <p className="text-[10px] text-red-400 font-medium tracking-wide uppercase mt-1">
+                    This action is absolutely irreversible.
+                  </p>
+                </div>
+
+                {activeCompany?.pin && (
+                  <div className="space-y-1.5 text-left max-w-xs mx-auto pt-2">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider block">
+                      Enter Currently Opened Company PIN to Authorize Reset
+                    </label>
+                    <input 
+                      type="password" 
+                      maxLength={4}
+                      placeholder="Enter 4-digit PIN"
+                      value={formData.pinConfirm || ""}
+                      onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
+                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-center text-sm font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-xs placeholder:font-normal placeholder:tracking-normal text-center"
+                    />
+                  </div>
+                )}
+             </div>
           </Modal>
         )}
         {showModal === 'delete_confirm_account' && (
@@ -2952,6 +3131,9 @@ export default function App() {
         const imported = JSON.parse(event.target?.result as string);
         if (imported.companies && imported.nextId) {
           setData(imported);
+          setView('companies');
+          setSelectedCompanyId(null);
+          setIsUnlocked(false);
           notify("Data imported successfully");
         } else {
           notify("Invalid backup format", "error");
@@ -2980,6 +3162,10 @@ export default function App() {
             setEnteredPin(pin);
             setView('dashboard');
           }} 
+          onBack={() => {
+            setSelectedCompanyId(null);
+            setIsUnlocked(true);
+          }}
         />
       )}
 
@@ -2996,6 +3182,16 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-2">
+          {!activeCompany && (
+            <button 
+              onClick={() => setShowModal('settings')}
+              className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-[var(--text-bright)] transition-colors flex items-center gap-1.5"
+              title="Settings & System Tools"
+            >
+              <Settings size={16} />
+              <span className="text-[10px] font-black uppercase hidden sm:inline">Settings</span>
+            </button>
+          )}
           {activeCompany && (
             <button 
               onClick={() => { setView('companies'); setSelectedCompanyId(null); setIsUnlocked(true); }}
@@ -3033,19 +3229,33 @@ export default function App() {
       {/* Mobile Navigation */}
       {activeCompany && isUnlocked && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe shadow-2xl">
-          <div className="flex justify-around items-center h-16 px-4 max-w-lg mx-auto relative group">
-             <button onClick={() => setView('dashboard')} className={`flex-1 flex flex-col items-center gap-1 transition-all ${view === 'dashboard' ? 'text-blue-500 scale-105' : 'text-[var(--muted)]'}`}>
-                <Activity size={20} />
+          <div className="flex justify-around items-center h-16 px-4 max-w-lg mx-auto relative group gap-1">
+             <button 
+               onClick={() => setView('dashboard')} 
+               className={`flex-1 py-1 px-1 rounded-xl flex flex-col items-center gap-0.5 transition-all outline-none select-none ${
+                 view === 'dashboard' 
+                   ? 'text-blue-400 bg-blue-500/10 font-black scale-105' 
+                   : 'text-[var(--muted)] hover:text-white'
+               }`}
+             >
+                <Activity size={18} />
                 <span className="text-[8px] font-black uppercase tracking-tighter">Live</span>
              </button>
              
-             <button onClick={() => setView('accounts')} className={`flex-1 flex flex-col items-center gap-1 transition-all ${view === 'accounts' ? 'text-blue-500 scale-105' : 'text-[var(--muted)]'}`}>
-                <Briefcase size={20} />
+             <button 
+               onClick={() => setView('accounts')} 
+               className={`flex-1 py-1 px-1 rounded-xl flex flex-col items-center gap-0.5 transition-all outline-none select-none ${
+                 view === 'accounts' || view === 'journal'
+                   ? 'text-blue-400 bg-blue-500/10 font-black scale-105' 
+                   : 'text-[var(--muted)] hover:text-white'
+               }`}
+             >
+                <Briefcase size={18} />
                 <span className="text-[8px] font-black uppercase tracking-tighter">Accounts</span>
              </button>
              
              {/* Center Plus Button */}
-             <div className="relative -top-4">
+             <div className="relative -top-4 shrink-0 mx-1">
                 <button 
                   onClick={openNewEntryModal}
                   className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-500/40 relative z-10 active:scale-90 transition-transform"
@@ -3055,13 +3265,27 @@ export default function App() {
                 <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-20 -z-10" />
              </div>
 
-             <button onClick={() => setView('reports')} className={`flex-1 flex flex-col items-center gap-1 transition-all ${view === 'reports' ? 'text-blue-500 scale-105' : 'text-[var(--muted)]'}`}>
-                <FileText size={20} />
+             <button 
+               onClick={() => setView('reports')} 
+               className={`flex-1 py-1 px-1 rounded-xl flex flex-col items-center gap-0.5 transition-all outline-none select-none ${
+                 view === 'reports' 
+                   ? 'text-blue-400 bg-blue-500/10 font-black scale-105' 
+                   : 'text-[var(--muted)] hover:text-white'
+               }`}
+             >
+                <FileText size={18} />
                 <span className="text-[8px] font-black uppercase tracking-tighter">Reports</span>
              </button>
 
-             <button onClick={() => setShowModal('settings')} className={`flex-1 flex flex-col items-center gap-1 transition-all ${showModal === 'settings' ? 'text-blue-500 scale-105' : 'text-[var(--muted)]'}`}>
-                <Settings size={20} />
+             <button 
+               onClick={() => setShowModal('settings')} 
+               className={`flex-1 py-1 px-1 rounded-xl flex flex-col items-center gap-0.5 transition-all outline-none select-none ${
+                 showModal === 'settings' 
+                   ? 'text-blue-400 bg-blue-500/10 font-black scale-105' 
+                   : 'text-[var(--muted)] hover:text-white'
+               }`}
+             >
+                <Settings size={18} />
                 <span className="text-[8px] font-black uppercase tracking-tighter">Settings</span>
              </button>
           </div>
