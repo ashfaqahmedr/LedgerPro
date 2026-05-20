@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.ledgerpro.app',
   appName: 'LedgerPro',
   webDir: 'dist',
-  bundledWebRuntime: false,
   server: {
     androidScheme: 'https'
   }
