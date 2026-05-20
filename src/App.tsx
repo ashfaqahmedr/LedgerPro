@@ -2027,13 +2027,13 @@ export default function App() {
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
             <p className="text-[8px] font-black text-teal-400">Debit (+)</p>
             <h3 className="text-[11px] font-bold text-[var(--text-bright)] mt-0.5 truncate leading-none">
-              {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0))}
+              {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit' && (!e.reference || !e.reference.toUpperCase().startsWith("REV"))).reduce((s, e) => s + e.amount, 0), 0))}
             </h3>
           </div>
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
             <p className="text-[8px] font-black text-orange-400">Credit (-)</p>
             <h3 className="text-[11px] font-bold text-[var(--text-bright)] mt-0.5 truncate leading-none">
-              {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0))}
+              {formatCurrency(activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit' && (!e.reference || !e.reference.toUpperCase().startsWith("REV"))).reduce((s, e) => s + e.amount, 0), 0))}
             </h3>
           </div>
           <div className="p-2.5 bg-[var(--surface)] rounded-xl border border-blue-500/20 bg-blue-500/5 shadow-sm">
@@ -2141,8 +2141,8 @@ export default function App() {
       }) || [];
 
     const companyOpening = activeCompany?.accounts.reduce((s, a) => s + getAccountBalance(a, formatDate(new Date(parseDate(activeRange.start).getTime() - 86400000))), 0) || 0;
-    const companyDebit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0) || 0;
-    const companyCredit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0) || 0;
+    const companyDebit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit' && (!e.reference || !e.reference.toUpperCase().startsWith("REV"))).reduce((s, e) => s + e.amount, 0), 0) || 0;
+    const companyCredit = activeCompany?.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit' && (!e.reference || !e.reference.toUpperCase().startsWith("REV"))).reduce((s, e) => s + e.amount, 0), 0) || 0;
     const companyClosing = activeCompany?.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0) || 0;
 
     return (
