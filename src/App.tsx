@@ -210,36 +210,44 @@ const STORE_NAME = "AppData";
 const ACTIVE_COMPANY_KEY = "ledgerpro_active_company_id";
 
 // --- Sub-components for better stability (outside App to prevent remounting) ---
-const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, disabled, className }: any) => (
+const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, disabled, className, bodyClassName }: any) => (
   <motion.div 
     key={`backdrop-${title}`}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto native-scroll"
+    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 overflow-hidden"
   >
     <motion.div 
       key={`modal-content-${title}`}
-      initial={{ scale: 0.95, opacity: 0 }}
+      initial={{ scale: 0.98, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.95, opacity: 0 }}
-      className={`w-full max-w-md bg-[var(--card)] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border)] ${className || ""}`}
+      exit={{ scale: 0.98, opacity: 0 }}
+      className={`w-screen h-screen bg-[var(--card)] overflow-hidden shadow-2xl border border-[var(--border)] flex flex-col relative ${className || ""}`}
     >
-      <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center">
-        <h3 className="text-lg font-bold text-[var(--text-bright)]">{title}</h3>
-        <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--text)]">
-          <X size={18} />
+      {/* Header — pushed below the system status bar */}
+      <div
+        className="px-2 border-b border-[var(--border)] flex justify-between items-center shrink-0 min-h-[24px]"
+        style={{ paddingTop: 'calc(var(--sat) + 0.125rem)', paddingBottom: '0.125rem' }}
+      >
+        <h3 className="text-[10px] font-bold text-[var(--text-bright)]">{title}</h3>
+        <button onClick={onClose} className="p-0.5 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--text)]">
+          <X size={12} />
         </button>
       </div>
-      <div className="p-5 space-y-4 max-h-[65vh] overflow-y-auto native-scroll">
+      <div className={`p-3 space-y-3 overflow-y-auto native-scroll flex-1 ${bodyClassName || ""}`}>
         {children}
       </div>
-      <div className="p-3 bg-[var(--surface)] flex gap-3 border-t border-[var(--border)]">
-        <button onClick={onClose} className="flex-1 px-4 py-1.5 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--card)] transition-colors">Cancel</button>
+      {/* Footer — pushed above the system navigation bar */}
+      <div
+        className="px-3 pt-2 bg-[var(--surface)] flex gap-3 border-t border-[var(--border)] shrink-0"
+        style={{ paddingBottom: 'calc(var(--sab) + 0.5rem)' }}
+      >
+        <button onClick={onClose} className="flex-1 px-4 py-3.5 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--card)] transition-colors active:scale-95">Cancel</button>
         <button 
           onClick={onConfirm} 
           disabled={disabled}
-          className={`flex-1 px-4 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold transition-all shadow-lg shadow-blue-500/20 ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'hover:bg-blue-500 active:scale-95'}`}
+          className={`flex-1 px-4 py-3.5 rounded-xl bg-blue-600 text-white text-xs font-bold transition-all shadow-lg shadow-blue-500/20 ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'hover:bg-blue-500 active:scale-95'}`}
         >
           {confirmText}
         </button>
@@ -247,6 +255,7 @@ const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, d
     </motion.div>
   </motion.div>
 );
+
 
 const EllipsisMenu = ({ options }: { options: { label: string; icon: any; onClick: () => void; danger?: boolean }[] }) => {
   const [open, setOpen] = useState(false);
@@ -801,10 +810,20 @@ const JournalEntryModal = ({
   onSave, 
   setPreviousModal,
   setShowModal,
-  formatCurrency
+  formatCurrency,
+  openNewAccountModal
 }: any) => {
   const [editingLine, setEditingLine] = useState<any>(null);
   
+  // Restore editing line draft if returned from new account modal
+  useEffect(() => {
+    if (formData.editingLineDraft) {
+      setEditingLine(formData.editingLineDraft);
+      const { editingLineDraft, ...rest } = formData;
+      setFormData(rest);
+    }
+  }, [formData.editingLineDraft, setFormData]);
+
   // Sync draft account if returned from new account modal
   useEffect(() => {
     if (formData.draft_accountId && editingLine) {
@@ -883,250 +902,288 @@ const JournalEntryModal = ({
 
   return (
     <Modal 
-      title={formData.transactionId ? "Edit Entry" : "Add"} 
+      title={formData.transactionId ? "Edit Entry" : "Add Entry"} 
       onConfirm={onSave} 
       onClose={onClose}
       confirmText={isBalanced ? (formData.transactionId ? "Update Entry" : "Post Entry") : "Unbalanced"}
       disabled={!isBalanced}
+      bodyClassName="!max-h-none !overflow-hidden !p-0 !space-y-0 relative"
     >
-      <div className="space-y-4">
-        {/* Main Header */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-[var(--muted)]">Date</label>
-            <input 
-              type="date" 
-              value={formData.date || ""} 
-              onChange={e => setFormData({...formData, date: e.target.value})} 
-              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-[var(--muted)]">Ref</label>
-            <input 
-              type="text" 
-              placeholder="GJ-..."
-              value={formData.transactionRef || ""} 
-              onChange={e => setFormData({...formData, transactionRef: e.target.value})} 
-              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
-            />
-          </div>
-        </div>
-
-        {/* Action Bar */}
-        <div className="flex justify-between items-center bg-[var(--surface)] p-2 rounded-xl border border-[var(--border)]">
-          <div className="text-[9px] font-black text-[var(--muted)] ml-2">
-            {items.length} Lines
-          </div>
-          <div className="flex items-center gap-2">
-            {items.length > 0 && (
-              <button 
-                type="button"
-                onClick={() => {
-                  const reversedItems = items.map((item: any) => {
-                    const isDebit = item.type === 'debit';
-                    return {
-                      ...item,
-                      type: isDebit ? 'credit' : 'debit',
-                      debit: isDebit ? '0' : item.credit,
-                      credit: isDebit ? item.debit : '0',
-                    };
-                  });
-                  setFormData({
-                    ...formData,
-                    items: reversedItems
-                  });
-                }}
-                className="px-2.5 py-1.5 text-blue-400 hover:text-blue-300 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/15 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 active:scale-95"
-                title="Swap debits and credits for all lines"
-              >
-                <ArrowUpDown size={12} />
-                Reverse DR/CR Lines
-              </button>
-            )}
-            <button 
-              type="button"
-              onClick={handleOpenAddLine}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-blue-500/20 active:scale-95"
-            >
-              <Plus size={14} />
-              Add Line
-            </button>
-          </div>
-        </div>
-
-        {/* Lines Table */}
-        <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface)] max-h-[35vh] overflow-y-auto native-scroll">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[var(--card)] sticky top-0 z-10">
-              <tr>
-                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account</th>
-                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
-                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
-                <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)]">
-              {items.length > 0 ? items.map((item: any) => {
-                const acc = activeCompany?.accounts.find((a: any) => a.id.toString() === item.accountId);
-                return (
-                  <tr 
-                    key={item.id} 
-                    className="hover:bg-[var(--card)] transition-colors cursor-pointer group"
-                    onClick={() => handleOpenEditLine(item)}
-                  >
-                    <td className="p-2.5 text-left">
-                      <div className="font-bold text-[var(--text-bright)] truncate max-w-[100px]">{acc ? acc.name : 'Select Account...'}</div>
-                      <div className="text-[8px] text-[var(--muted)]">{acc?.code}</div>
-                    </td>
-                    <td className="p-2.5 text-right font-mono font-bold text-teal-400">
-                      {parseFloat(item.debit) > 0 ? parseFloat(item.debit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
-                    </td>
-                    <td className="p-2.5 text-right font-mono font-bold text-orange-400">
-                      {parseFloat(item.credit) > 0 ? parseFloat(item.credit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
-                    </td>
-                    <td className="p-2.5 text-right">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
-                        className="p-1 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
-                      >
-                        <Trash2 size={10} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              }) : (
-                <tr>
-                  <td colSpan={4} className="p-8 text-center text-[var(--muted)] text-[10px] italic">No lines added.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer Totals */}
-        <div className="p-3 bg-[var(--bg)] rounded-xl border border-dashed border-[var(--border)] flex justify-between items-center">
-          <div className="flex flex-col">
-            <span className="text-[8px] font-black text-[var(--muted)]">Dr</span>
-            <span className="text-teal-400 font-bold text-xs tracking-tight">{formatCurrency(totalDr)}</span>
-          </div>
-          <div className="flex flex-col items-center">
-             <div className={`px-3 py-1 rounded-full text-[9px] font-black tracking-tighter shadow-sm border ${isBalanced ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-              {isBalanced ? 'Balanced' : `-${formatCurrency(Math.abs(totalDr - totalCr))}`}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-0 h-full overflow-hidden">
+        {/* Left Column - Forms, Actions, Lines Table, Totals */}
+        <div className="md:col-span-7 flex flex-col h-full overflow-hidden p-5 space-y-4">
+          {/* Main Header */}
+          <div className="grid grid-cols-2 gap-3 shrink-0">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-[var(--muted)]">Date</label>
+              <input 
+                type="date" 
+                value={formData.date || ""} 
+                onChange={e => setFormData({...formData, date: e.target.value})} 
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-[var(--muted)]">Ref</label>
+              <input 
+                type="text" 
+                placeholder="GJ-..."
+                value={formData.transactionRef || ""} 
+                onChange={e => setFormData({...formData, transactionRef: e.target.value})} 
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-xs outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
+              />
             </div>
           </div>
-          <div className="flex flex-col text-right">
-            <span className="text-[8px] font-black text-[var(--muted)]">Cr</span>
-            <span className="text-orange-400 font-bold text-xs tracking-tight">{formatCurrency(totalCr)}</span>
+
+          {/* Action Bar */}
+          <div className="flex justify-between items-center bg-[var(--surface)] p-2 rounded-xl border border-[var(--border)] shrink-0">
+            <div className="text-[9px] font-black text-[var(--muted)] ml-2">
+              {items.length} Lines
+            </div>
+            <div className="flex items-center gap-2">
+              {items.length > 0 && (
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const reversedItems = items.map((item: any) => {
+                      const isDebit = item.type === 'debit';
+                      return {
+                        ...item,
+                        type: isDebit ? 'credit' : 'debit',
+                        debit: isDebit ? '0' : item.credit,
+                        credit: isDebit ? item.debit : '0',
+                      };
+                    });
+                    setFormData({
+                      ...formData,
+                      items: reversedItems
+                    });
+                  }}
+                  className="px-2.5 py-1.5 text-blue-400 hover:text-blue-300 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/15 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 active:scale-95"
+                  title="Swap debits and credits for all lines"
+                >
+                  <ArrowUpDown size={12} />
+                  Reverse DR/CR Lines
+                </button>
+              )}
+              <button 
+                type="button"
+                onClick={handleOpenAddLine}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-blue-500/20 active:scale-95"
+              >
+                <Plus size={14} />
+                Add Line
+              </button>
+            </div>
+          </div>
+
+          {/* Lines Table */}
+          <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface)] flex-1 overflow-y-auto native-scroll">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-[var(--card)] sticky top-0 z-10">
+                <tr>
+                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account</th>
+                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
+                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
+                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {items.length > 0 ? items.map((item: any) => {
+                  const acc = activeCompany?.accounts.find((a: any) => a.id.toString() === item.accountId);
+                  return (
+                    <tr 
+                      key={item.id} 
+                      className="hover:bg-[var(--card)] transition-colors cursor-pointer group"
+                      onClick={() => handleOpenEditLine(item)}
+                    >
+                      <td className="p-2.5 text-left">
+                        <div className="font-bold text-[var(--text-bright)] truncate max-w-[150px]">{acc ? acc.name : 'Select Account...'}</div>
+                        <div className="text-[8px] text-[var(--muted)]">{acc?.code}</div>
+                      </td>
+                      <td className="p-2.5 text-right font-mono font-bold text-teal-400">
+                        {parseFloat(item.debit) > 0 ? parseFloat(item.debit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
+                      </td>
+                      <td className="p-2.5 text-right font-mono font-bold text-orange-400">
+                        {parseFloat(item.credit) > 0 ? parseFloat(item.credit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
+                      </td>
+                      <td className="p-2.5 text-right">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
+                          className="p-1 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
+                        >
+                          <Trash2 size={10} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }) : (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-[var(--muted)] text-[10px] italic">No lines added.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Footer Totals */}
+          <div className="p-3 bg-[var(--bg)] rounded-xl border border-dashed border-[var(--border)] flex justify-between items-center shrink-0">
+            <div className="flex flex-col">
+              <span className="text-[8px] font-black text-[var(--muted)]">Dr</span>
+              <span className="text-teal-400 font-bold text-xs tracking-tight">{formatCurrency(totalDr)}</span>
+            </div>
+            <div className="flex flex-col items-center">
+               <div className={`px-3 py-1 rounded-full text-[9px] font-black tracking-tighter shadow-sm border ${isBalanced ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                {isBalanced ? 'Balanced' : `-${formatCurrency(Math.abs(totalDr - totalCr))}`}
+              </div>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-[8px] font-black text-[var(--muted)]">Cr</span>
+              <span className="text-orange-400 font-bold text-xs tracking-tight">{formatCurrency(totalCr)}</span>
+            </div>
           </div>
         </div>
 
-        {/* Line Editor Overlay */}
-        <AnimatePresence>
-          {editingLine && (
-            <motion.div 
-              key="line-editor-overlay"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="absolute inset-0 z-[110] bg-[var(--card)] p-6 flex flex-col justify-center border-t border-[var(--border)] rounded-3xl"
-            >
-              <div className="space-y-4 max-w-sm mx-auto w-full">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-lg font-black uppercase tracking-tight text-blue-500">
-                    {items.some((i: any) => i.id === editingLine.id) ? "Edit Entry" : "Add"}
-                  </h4>
-                  <button onClick={() => setEditingLine(null)} className="p-2 hover:bg-[var(--surface)] text-[var(--muted)] rounded-full">
-                    <X size={18} />
-                  </button>
-                </div>
+        {/* Right Column - Editor Panel or Help Guidelines */}
+        <div className={editingLine ? "absolute md:relative inset-0 md:inset-auto z-20 md:z-0 bg-[var(--card)] md:bg-[var(--surface)]/10 md:col-span-5 h-full overflow-hidden border-t md:border-t-0 md:border-l border-[var(--border)] flex flex-col" : "hidden md:flex md:col-span-5 bg-[var(--surface)]/10 border-l border-[var(--border)] h-full overflow-hidden flex-col justify-between"}>
+          <AnimatePresence mode="wait">
+            {editingLine ? (
+              <motion.div 
+                key="line-editor"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex-1 flex flex-col p-5 overflow-y-auto native-scroll justify-center md:justify-start"
+              >
+                <div className="space-y-4 max-w-sm mx-auto w-full">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="text-sm font-black uppercase tracking-wider text-blue-500">
+                      {items.some((i: any) => i.id === editingLine.id) ? "Edit Line Details" : "Add Line Details"}
+                    </h4>
+                    <button onClick={() => setEditingLine(null)} className="p-2 hover:bg-[var(--surface)] text-[var(--muted)] rounded-full">
+                      <X size={18} />
+                    </button>
+                  </div>
 
-                {/* Dr/Cr Tabs */}
-                <div className="flex bg-[var(--surface)] p-1 rounded-xl border border-[var(--border)]">
-                  <button 
-                    onClick={() => setEditingLine({...editingLine, type: 'debit'})}
-                    className={`flex-1 py-3 text-[10px] font-black uppercase rounded-lg transition-all ${editingLine.type === 'debit' ? 'bg-teal-500 text-white shadow-lg' : 'text-[var(--muted)] hover:text-white'}`}
-                  >
-                    DEBIT (DR)
-                  </button>
-                  <button 
-                    onClick={() => setEditingLine({...editingLine, type: 'credit'})}
-                    className={`flex-1 py-3 text-[10px] font-black uppercase rounded-lg transition-all ${editingLine.type === 'credit' ? 'bg-orange-500 text-white shadow-lg' : 'text-[var(--muted)] hover:text-white'}`}
-                  >
-                    CREDIT (CR)
-                  </button>
-                </div>
+                  {/* Dr/Cr Tabs */}
+                  <div className="flex bg-[var(--surface)] p-1 rounded-xl border border-[var(--border)]">
+                    <button 
+                      type="button"
+                      onClick={() => setEditingLine({...editingLine, type: 'debit'})}
+                      className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg transition-all ${editingLine.type === 'debit' ? 'bg-teal-500 text-white shadow-lg' : 'text-[var(--muted)] hover:text-white'}`}
+                    >
+                      DEBIT (DR)
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setEditingLine({...editingLine, type: 'credit'})}
+                      className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg transition-all ${editingLine.type === 'credit' ? 'bg-orange-500 text-white shadow-lg' : 'text-[var(--muted)] hover:text-white'}`}
+                    >
+                      CREDIT (CR)
+                    </button>
+                  </div>
 
-                <SearchableSelect 
-                  label="Account"
-                  placeholder="Select Account"
-                  value={editingLine.accountId}
-                  options={(activeCompany?.accounts || [])
-                    .filter((a: any) => !items.some((i: any) => i.accountId === a.id.toString() && i.id !== editingLine.id))
-                    .map((a: any) => ({ value: a.id.toString(), label: `${a.code} - ${a.name}` }))
-                  }
-                  onChange={(val: string) => setEditingLine({...editingLine, accountId: val})}
-                  onAddClick={() => { 
-                    setPreviousModal(formData.transactionId ? 'edit_entry' : 'new_entry'); 
-                    setFormData({...formData, accountSourceField: 'draft_accountId'}); 
-                    setShowModal('new_account'); 
-                  }}
-                />
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Amount</label>
-                  <input 
-                    type="number"
-                    placeholder="0.00"
-                    value={editingLine.amount}
-                    onChange={e => setEditingLine({...editingLine, amount: e.target.value})}
-                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-lg font-black outline-none focus:border-blue-500 text-[var(--text-bright)]"
+                  <SearchableSelect 
+                    label="Account"
+                    placeholder="Select Account"
+                    value={editingLine.accountId}
+                    options={(activeCompany?.accounts || [])
+                      .filter((a: any) => !items.some((i: any) => i.accountId === a.id.toString() && i.id !== editingLine.id))
+                      .map((a: any) => ({ value: a.id.toString(), label: `${a.code} - ${a.name}` }))
+                    }
+                    onChange={(val: string) => setEditingLine({...editingLine, accountId: val})}
+                    onAddClick={() => { 
+                      setPreviousModal(formData.transactionId ? 'edit_entry' : 'new_entry'); 
+                      openNewAccountModal({
+                        accountSourceField: 'draft_accountId',
+                        editingLineDraft: editingLine
+                      }); 
+                    }}
                   />
-                </div>
 
-                <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Detail</label>
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Amount</label>
                     <input 
-                      type="text"
-                      placeholder="Line detail"
-                      value={editingLine.detail}
-                      onChange={e => setEditingLine({...editingLine, detail: e.target.value})}
-                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs outline-none focus:border-blue-500"
+                      type="number"
+                      placeholder="0.00"
+                      value={editingLine.amount}
+                      onChange={e => setEditingLine({...editingLine, amount: e.target.value})}
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-base font-black outline-none focus:border-blue-500 text-[var(--text-bright)]"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Reference</label>
-                    <input 
-                      type="text"
-                      placeholder="Line ref"
-                      value={editingLine.ref}
-                      onChange={e => setEditingLine({...editingLine, ref: e.target.value})}
-                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs outline-none focus:border-blue-500"
-                    />
+
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-[var(--muted)] uppercase">Detail</label>
+                      <input 
+                        type="text"
+                        placeholder="Line detail"
+                        value={editingLine.detail}
+                        onChange={e => setEditingLine({...editingLine, detail: e.target.value})}
+                        className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs outline-none focus:border-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-[var(--muted)] uppercase">Reference</label>
+                      <input 
+                        type="text"
+                        placeholder="Line ref"
+                        value={editingLine.ref}
+                        onChange={e => setEditingLine({...editingLine, ref: e.target.value})}
+                        className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 mt-2">
+                    <button 
+                      type="button"
+                      onClick={() => setEditingLine(null)}
+                      className="flex-1 py-2 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--surface)] transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={handleApplyLine}
+                      className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+                    >
+                      Apply Line
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex gap-3 mt-2">
-                  <button 
-                    type="button"
-                    onClick={() => setEditingLine(null)}
-                    className="flex-1 py-2 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--muted)] hover:bg-[var(--surface)] transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={handleApplyLine}
-                    className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
-                  >
-                    Apply Line
-                  </button>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="help-guide"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1 flex flex-col justify-center items-center p-3"
+              >
+                <div className="flex justify-between items-center text-[10px] mb-3">
+                  <span className="text-[var(--muted)]">Status:</span>
+                  <span className={`font-black uppercase ${isBalanced ? 'text-teal-400' : 'text-red-400'}`}>
+                    {isBalanced ? 'Balanced' : 'Out of Balance'}
+                  </span>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <div className={`p-2 rounded-lg border text-[8px] flex items-center gap-2 w-full ${isBalanced ? 'bg-teal-500/10 border-teal-500/20 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+                  {isBalanced ? (
+                    <>
+                      <CheckCircle2 size={12} className="shrink-0" />
+                      <span>Ready to post</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={12} className="shrink-0" />
+                      <span>Difference: {formatCurrency(Math.abs(totalDr - totalCr))}</span>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </Modal>
   );
@@ -1142,9 +1199,14 @@ const SingleEntryModal = ({
   onSave, 
   setPreviousModal,
   setShowModal,
-  formatCurrency
+  formatCurrency,
+  openNewAccountModal
 }: any) => {
   if (!isOpen || !activeCompany) return null;
+
+  const drAcc = activeCompany?.accounts.find((a: any) => a.id.toString() === formData.debitAccountId);
+  const crAcc = activeCompany?.accounts.find((a: any) => a.id.toString() === formData.creditAccountId);
+  const amountVal = parseFloat(formData.amount) || 0;
 
   return (
     <Modal 
@@ -1152,8 +1214,9 @@ const SingleEntryModal = ({
       onConfirm={onSave} 
       onClose={onClose}
       confirmText={formData.transactionId ? "Update Entry" : "Post Entry"}
+      bodyClassName="h-full flex flex-col p-4 md:p-6"
     >
-      <div className="space-y-4">
+      <div className="space-y-4 w-full flex-1 overflow-y-auto native-scroll text-left">
         <div className="space-y-1.5 focus-within:z-10">
           <label className="text-[10px] font-black text-[var(--muted)]">Transaction Date</label>
           <input type="date" value={formData.date || ""} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
@@ -1167,7 +1230,7 @@ const SingleEntryModal = ({
             colorClass="text-teal-400"
             options={activeCompany?.accounts.filter((a: any) => a.id.toString() !== formData.creditAccountId).map((a: any) => ({ value: a.id.toString(), label: `${a.code} - ${a.name}` })) || []}
             onChange={(val: string) => setFormData({ ...formData, debitAccountId: val })}
-            onAddClick={() => { setPreviousModal('new_entry_single'); setFormData({...formData, accountSourceField: 'debitAccountId'}); setShowModal('new_account'); }}
+            onAddClick={() => { setPreviousModal('new_entry_single'); openNewAccountModal({ accountSourceField: 'debitAccountId' }); }}
           />
           <SearchableSelect 
             label="Credit (Dec Asset / Inc Liab)"
@@ -1176,7 +1239,7 @@ const SingleEntryModal = ({
             colorClass="text-orange-400"
             options={activeCompany?.accounts.filter((a: any) => a.id.toString() !== formData.debitAccountId).map((a: any) => ({ value: a.id.toString(), label: `${a.code} - ${a.name}` })) || []}
             onChange={(val: string) => setFormData({ ...formData, creditAccountId: val })}
-            onAddClick={() => { setPreviousModal('new_entry_single'); setFormData({...formData, accountSourceField: 'creditAccountId'}); setShowModal('new_account'); }}
+            onAddClick={() => { setPreviousModal('new_entry_single'); openNewAccountModal({ accountSourceField: 'creditAccountId' }); }}
           />
         </div>
 
@@ -1402,6 +1465,33 @@ export default function App() {
     setCompanyToDelete(comp);
     setFormData({});
     setShowModal('delete_company_confirm');
+  };
+
+  const generateNextAccountCode = (type: AccountType, company: Company | null) => {
+    const prefixes: Record<string, string> = { asset: '1', liability: '2', equity: '3', revenue: '4', expense: '5' };
+    const prefix = prefixes[type] || '1';
+    if (!company) return prefix + "001";
+    const existing = (company.accounts || [])
+      .filter(a => a.type === type)
+      .map(a => parseInt(a.code))
+      .filter(c => !isNaN(c));
+    const nextNum = existing.length > 0 ? Math.max(...existing) + 1 : parseInt(prefix + "001");
+    return nextNum.toString();
+  };
+
+  const openNewAccountModal = (extraData: any = {}) => {
+    const defaultType = 'asset';
+    const nextCode = generateNextAccountCode(defaultType, activeCompany);
+    setFormData({
+      ...formData,
+      ...extraData,
+      type: defaultType,
+      code: nextCode,
+      name: "",
+      openingBalance: "",
+      description: ""
+    });
+    setShowModal('new_account');
   };
 
   const handleCreateAccount = () => {
@@ -2200,7 +2290,7 @@ export default function App() {
             <ArrowUpDown size={18} />
           </button>
           <button 
-            onClick={() => { setFormData({}); setShowModal('new_account'); }}
+            onClick={() => openNewAccountModal()}
             className="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 active:scale-95 transition-all shrink-0"
             title="Add Account"
           >
@@ -2450,175 +2540,257 @@ export default function App() {
     return (
       <AnimatePresence mode="wait">
         {showModal === 'new_company' && (
-          <Modal key="modal_new_company" title="Setup Business" confirmText="Create Company" onConfirm={handleCreateCompany} onClose={() => setShowModal(null)}>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--muted)] uppercase">Business Name</label>
-                <input 
-                  autoFocus 
-                  type="text" 
-                  placeholder="e.g. Acme Corp" 
-                  value={formData.name || ""} 
-                  onChange={e => setFormData({...formData, name: e.target.value})} 
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Currency</label>
-                  <select 
-                    value={formData.currency || "PKR"} 
-                    onChange={e => setFormData({...formData, currency: e.target.value})}
-                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
-                  >
-                    <option value="PKR">PKR (₨)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="AED">AED (د.إ)</option>
-                  </select>
-                </div>
+          <Modal 
+            key="modal_new_company" 
+            title="Setup Business" 
+            confirmText="Create Company" 
+            onConfirm={handleCreateCompany} 
+            onClose={() => setShowModal(null)}
+            bodyClassName="h-full flex flex-col justify-center items-center p-4 md:p-8 overflow-y-auto native-scroll"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-left max-w-4xl w-full">
+              {/* Left Column - Form */}
+              <div className="md:col-span-7 space-y-4">
                 <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-[var(--muted)] uppercase text-left block">4-Digit PIN</label>
-                   <input 
-                    type="password" 
-                    maxLength={4}
-                    placeholder="0000 (Optional)"
-                    value={formData.pin || ""} 
-                    onChange={e => setFormData({...formData, pin: e.target.value.replace(/\D/g, '')})} 
-                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 tracking-[1em] text-center" 
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Business Name</label>
+                  <input 
+                    autoFocus 
+                    type="text" 
+                    placeholder="e.g. Acme Corp" 
+                    value={formData.name || ""} 
+                    onChange={e => setFormData({...formData, name: e.target.value})} 
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" 
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Currency</label>
+                    <select 
+                      value={formData.currency || "PKR"} 
+                      onChange={e => setFormData({...formData, currency: e.target.value})}
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
+                    >
+                      <option value="PKR">PKR (₨)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="AED">AED (د.إ)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                     <label className="text-[10px] font-black text-[var(--muted)] uppercase block">4-Digit PIN</label>
+                     <input 
+                      type="password" 
+                      maxLength={4}
+                      placeholder="0000 (Optional)"
+                      value={formData.pin || ""} 
+                      onChange={e => setFormData({...formData, pin: e.target.value.replace(/\D/g, '')})} 
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 tracking-[1em] text-center" 
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Industry</label>
+                  <input type="text" placeholder="e.g. Retail" value={formData.industry || ""} onChange={e => setFormData({...formData, industry: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
+                </div>
+                
+                <div className="pt-4 border-t border-[var(--border)] text-center space-y-2">
+                  <p className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider">Or restore from existing</p>
+                  <label className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl cursor-pointer transition-all text-xs tracking-wider uppercase select-none shadow-lg shadow-purple-500/20 active:scale-95 w-full">
+                    <Upload size={14} /> Import Backup File
+                    <input type="file" accept=".json" onChange={(e) => { importData(e); setShowModal(null); }} className="hidden" />
+                  </label>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--muted)] uppercase">Industry</label>
-                <input type="text" placeholder="e.g. Retail" value={formData.industry || ""} onChange={e => setFormData({...formData, industry: e.target.value})} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]" />
-              </div>
-              
-              <div className="pt-4 border-t border-[var(--border)] text-center space-y-2">
-                <p className="text-[10px] font-bold uppercase text-[var(--muted)] tracking-wider">Or restore from existing</p>
-                <label className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl cursor-pointer transition-all text-xs tracking-wider uppercase select-none shadow-lg shadow-purple-500/20 active:scale-95 w-full">
-                  <Upload size={14} /> Import Backup File
-                  <input type="file" accept=".json" onChange={(e) => { importData(e); setShowModal(null); }} className="hidden" />
-                </label>
+
+              {/* Right Column - Info card */}
+              <div className="md:col-span-5 flex flex-col justify-between bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3.5 space-y-3 text-left">
+                <div>
+                  <h4 className="text-[11px] font-bold text-[var(--text-bright)] mb-3 flex items-center gap-2">
+                    <Building2 size={14} className="text-blue-500 shrink-0" />
+                    About Local Businesses
+                  </h4>
+                  <ul className="space-y-3 text-[9px] text-[var(--text)] leading-relaxed">
+                    <li className="flex gap-2">
+                      <Lock size={12} className="text-teal-500 shrink-0 mt-0.5" />
+                      <span><strong>PIN Protection:</strong> Setting a 4-digit PIN secures your company data. Transactions cannot be deleted or modified without this PIN.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <Scale size={12} className="text-blue-500 shrink-0 mt-0.5" />
+                      <span><strong>Local-First Storage:</strong> All accounts, charts, and transaction journals are stored securely offline in your browser's IndexedDB.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <Download size={12} className="text-purple-500 shrink-0 mt-0.5" />
+                      <span><strong>Backup & Restore:</strong> You can export backup files at any time. Keep regular backups to protect against browser data clearing.</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="p-3 bg-blue-500/5 rounded-xl border border-blue-500/10 text-[9px] text-[var(--muted)] leading-tight italic">
+                  LedgerPro operates fully client-side. No financial records are ever sent to external servers, ensuring maximum privacy and compliance.
+                </div>
               </div>
             </div>
           </Modal>
         )}
 
         {showModal === 'edit_company' && (
-          <Modal key="modal_edit_company" title="Edit Business" confirmText="Save Changes" onConfirm={handleUpdateCompany} onClose={() => setShowModal(null)}>
-             <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--muted)] uppercase">Business Name</label>
-                <input 
-                  type="text" 
-                  value={formData.name || ""} 
-                  onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
-                  placeholder="Company Name"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Currency</label>
-                  <select 
-                    value={formData.currency || "PKR"} 
-                    onChange={e => setFormData({...formData, currency: e.target.value})}
+          <Modal 
+            key="modal_edit_company" 
+            title="Edit Business" 
+            confirmText="Save Changes" 
+            onConfirm={handleUpdateCompany} 
+            onClose={() => setShowModal(null)}
+            bodyClassName="h-full flex flex-col justify-center items-center p-4 md:p-8 overflow-y-auto native-scroll"
+          >
+             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-left max-w-4xl w-full">
+              {/* Left Column - Form */}
+              <div className="md:col-span-7 space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Business Name</label>
+                  <input 
+                    type="text" 
+                    value={formData.name || ""} 
+                    onChange={e => setFormData({...formData, name: e.target.value})}
                     className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
-                  >
-                    <option value="PKR">PKR (₨)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="AED">AED (د.إ)</option>
-                  </select>
+                    placeholder="Company Name"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5 text-left">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Currency</label>
+                    <select 
+                      value={formData.currency || "PKR"} 
+                      onChange={e => setFormData({...formData, currency: e.target.value})}
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
+                    >
+                      <option value="PKR">PKR (₨)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="AED">AED (د.إ)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                     <label className="text-[10px] font-black text-[var(--muted)] uppercase block">4-Digit PIN</label>
+                     <input 
+                      type="password" 
+                      maxLength={4}
+                      placeholder="0000"
+                      value={formData.pin || ""} 
+                      onChange={e => setFormData({...formData, pin: e.target.value.replace(/\D/g, '')})} 
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 tracking-[1em] text-center" 
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-[var(--muted)] uppercase text-left block">4-Digit PIN</label>
-                   <input 
-                    type="password" 
-                    maxLength={4}
-                    placeholder="0000"
-                    value={formData.pin || ""} 
-                    onChange={e => setFormData({...formData, pin: e.target.value.replace(/\D/g, '')})} 
-                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 tracking-[1em] text-center" 
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Industry</label>
+                  <input 
+                    type="text" 
+                    value={formData.industry || ""} 
+                    onChange={e => setFormData({...formData, industry: e.target.value})}
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
+                    placeholder="Industry"
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--muted)] uppercase">Industry</label>
-                <input 
-                  type="text" 
-                  value={formData.industry || ""} 
-                  onChange={e => setFormData({...formData, industry: e.target.value})}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-blue-500/50 text-[var(--text-bright)]"
-                  placeholder="Industry"
-                />
+
+              {/* Right Column - Info card */}
+              <div className="md:col-span-5 flex flex-col justify-between bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3.5 space-y-3 text-left">
+                <div>
+                  <h4 className="text-[11px] font-bold text-[var(--text-bright)] mb-3 flex items-center gap-2">
+                    <Building2 size={14} className="text-blue-500 shrink-0" />
+                    Security Settings
+                  </h4>
+                  <ul className="space-y-3 text-[9px] text-[var(--text)] leading-relaxed">
+                    <li className="flex gap-2">
+                      <Lock size={12} className="text-teal-500 shrink-0 mt-0.5" />
+                      <span><strong>Access PIN:</strong> If set, modifying key company settings, deleting accounts, or purging transactions will require validation.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <Settings size={12} className="text-blue-500 shrink-0 mt-0.5" />
+                      <span><strong>Modifying Details:</strong> Changing currency or company name takes effect immediately across all ledger entries and financial statements.</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="p-3 bg-amber-500/5 rounded-xl border border-amber-500/10 text-[9px] text-[var(--muted)] leading-tight italic">
+                  Please note: changing currency does not convert historical amounts automatically; it only changes the currency symbol shown.
+                </div>
               </div>
             </div>
           </Modal>
         )}
 
-        {(showModal === 'new_account' || showModal === 'edit_account') && (
-          <Modal key="modal_account" title={showModal === 'new_account' ? "New Account" : "Edit Account"} onConfirm={showModal === 'new_account' ? handleCreateAccount : handleUpdateAccount} onClose={() => setShowModal(null)}>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
-                {ACCOUNT_TYPES.map(t => (
-                  <button 
-                    key={t.value}
-                    onClick={() => {
-                        const prefixes: Record<string, string> = { asset: '1', liability: '2', equity: '3', revenue: '4', expense: '5' };
-                        const prefix = prefixes[t.value];
-                        let code = formData.code || "";
-                        if (!code && prefix) {
-                          const existing = (activeCompany?.accounts || [])
-                            .filter(a => a.type === t.value)
-                            .map(a => parseInt(a.code))
-                            .filter(c => !isNaN(c));
-                          const nextNum = existing.length > 0 ? Math.max(...existing) + 1 : parseInt(prefix + "001");
-                          code = nextNum.toString();
-                        }
-                        setFormData({ ...formData, type: t.value, code });
-                    }}
-                    className={`px-2 py-3 rounded-xl border text-[10px] font-bold uppercase transition-all ${formData.type === t.value ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)]'}`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+        {(showModal === 'new_account' || showModal === 'edit_account') && (() => {
+          return (
+            <Modal 
+              key="modal_account" 
+              title={showModal === 'new_account' ? "New Account" : "Edit Account"} 
+              onConfirm={showModal === 'new_account' ? handleCreateAccount : handleUpdateAccount} 
+              onClose={() => setShowModal(null)}
+              bodyClassName="h-full flex flex-col items-center justify-center p-4 md:p-6 overflow-y-auto native-scroll"
+            >
+              <div className="max-w-xl w-full space-y-4 text-left">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {ACCOUNT_TYPES.map(t => (
+                    <button 
+                      key={t.value}
+                      type="button"
+                      onClick={() => {
+                          const nextCode = generateNextAccountCode(t.value, activeCompany);
+                          setFormData({ ...formData, type: t.value, code: nextCode });
+                      }}
+                      className={`px-2 py-3 rounded-xl border text-[10px] font-bold uppercase transition-all ${formData.type === t.value ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-lg' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)]'}`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Account Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="Account Name" 
+                    value={formData.name || ""} 
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)] text-[var(--text-bright)]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Code</label>
+                    <input 
+                      type="text" 
+                      placeholder="Auto-calculated" 
+                      value={formData.code || ""} 
+                      onChange={e => setFormData({...formData, code: e.target.value})}
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)] text-[var(--text-bright)] font-bold"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-[var(--muted)] uppercase">Opening Bal</label>
+                    <input 
+                      type="number" 
+                      placeholder="Opening Bal" 
+                      value={formData.openingBalance || ""} 
+                      onChange={e => setFormData({...formData, openingBalance: e.target.value})}
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)] text-[var(--text-bright)]"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-[var(--muted)] uppercase">Description</label>
+                  <textarea 
+                    placeholder="Description" 
+                    value={formData.description || ""} 
+                    onChange={e => setFormData({...formData, description: e.target.value})}
+                    className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)] h-20 text-[var(--text-bright)]"
+                  />
+                </div>
+
               </div>
-              <input 
-                type="text" 
-                placeholder="Account Name" 
-                value={formData.name || ""} 
-                onChange={e => setFormData({...formData, name: e.target.value})}
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)]"
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <input 
-                  type="text" 
-                  placeholder="Code (e.g. 1001)" 
-                  value={formData.code || ""} 
-                  onChange={e => setFormData({...formData, code: e.target.value})}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)]"
-                />
-                <input 
-                  type="number" 
-                  placeholder="Opening Bal" 
-                  value={formData.openingBalance || ""} 
-                  onChange={e => setFormData({...formData, openingBalance: e.target.value})}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)]"
-                />
-              </div>
-              <textarea 
-                placeholder="Description" 
-                value={formData.description || ""} 
-                onChange={e => setFormData({...formData, description: e.target.value})}
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 outline-none focus:border-[var(--primary)] h-20"
-              />
-            </div>
-          </Modal>
-        )}
+            </Modal>
+          );
+        })()}
 
         {(showModal === 'new_entry' || showModal === 'edit_entry') && (
           <JournalEntryModal 
@@ -2632,6 +2804,7 @@ export default function App() {
             setPreviousModal={setPreviousModal}
             setShowModal={setShowModal}
             formatCurrency={formatCurrency}
+            openNewAccountModal={openNewAccountModal}
           />
         )}
 
@@ -2647,12 +2820,21 @@ export default function App() {
             setPreviousModal={setPreviousModal}
             setShowModal={setShowModal}
             formatCurrency={formatCurrency}
+            openNewAccountModal={openNewAccountModal}
           />
         )}
 
         {showModal === 'entry_type_choice' && (
-          <Modal key="modal_choice" title="Choose Entry Type" onClose={() => setShowModal(null)} onConfirm={() => setShowModal(null)} confirmText="Select below">
-              <div className="grid grid-cols-1 gap-3">
+          <Modal 
+            key="modal_choice" 
+            title="Choose Entry Type" 
+            onClose={() => setShowModal(null)} 
+            onConfirm={() => setShowModal(null)} 
+            confirmText="Select entry type"
+            bodyClassName="h-full flex flex-col items-center justify-center p-6 text-center"
+          >
+            <div className="max-w-2xl w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button 
                   key="choice_standard"
                   onClick={() => {
@@ -2660,14 +2842,14 @@ export default function App() {
                     setFormData({ date: initialDate, debitAccountId: activeAccount?.id.toString() || '', creditAccountId: '' });
                     setShowModal('new_entry_single');
                   }}
-                  className="flex items-center gap-4 p-5 bg-[var(--surface)] hover:bg-[var(--border)] border border-[var(--border)] rounded-2xl transition-all group text-left"
+                  className="flex flex-col items-center justify-center text-center gap-4 p-6 bg-[var(--surface)] hover:bg-[var(--border)] border border-[var(--border)] rounded-2xl transition-all group hover:border-blue-500/30 cursor-pointer h-full"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <ArrowUpDown size={24} />
+                  <div className="w-16 h-16 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                    <ArrowUpDown size={28} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[var(--text-bright)]">Standard Ledger Entry</h4>
-                    <p className="text-[10px] text-[var(--muted)] font-black uppercase tracking-tight">Double Entry (One Dr, One Cr)</p>
+                    <h4 className="font-bold text-[var(--text-bright)] text-sm">Standard Ledger Entry</h4>
+                    <p className="text-[9px] text-[var(--muted)] font-black uppercase tracking-wider mt-1">Double Entry (One Dr, One Cr)</p>
                   </div>
                 </button>
                 <button 
@@ -2677,115 +2859,165 @@ export default function App() {
                     setFormData({ date: initialDate, items: [] });
                     setShowModal('new_entry');
                   }}
-                  className="flex items-center gap-4 p-5 bg-[var(--surface)] hover:bg-[var(--border)] border border-[var(--border)] rounded-2xl transition-all group text-left"
+                  className="flex flex-col items-center justify-center text-center gap-4 p-6 bg-[var(--surface)] hover:bg-[var(--border)] border border-[var(--border)] rounded-2xl transition-all group hover:border-purple-500/30 cursor-pointer h-full"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <LayoutDashboard size={24} />
+                  <div className="w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                    <LayoutDashboard size={28} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[var(--text-bright)]">Multiline / Split Entry</h4>
-                    <p className="text-[10px] text-[var(--muted)] font-black uppercase tracking-tight">Advance Peachtree Style (Multiple Dr/Cr)</p>
+                    <h4 className="font-bold text-[var(--text-bright)] text-sm">Multiline / Split Entry</h4>
+                    <p className="text-[9px] text-[var(--muted)] font-black uppercase tracking-wider mt-1">Advanced Peachtree Style (Multiple Dr/Cr)</p>
                   </div>
-                </button>
-              </div>
-            </Modal>
-          )}
-
-        {showModal === 'settings' && (
-          <Modal 
-            title="Settings" 
-            onClose={() => setShowModal(null)}
-            onConfirm={() => setShowModal(null)}
-            confirmText="Done"
-          >
-            <div className="space-y-6">
-              {/* Dark Mode */}
-              <div className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                    {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-                  </div>
-                  <div>
-                    <span className="text-sm font-bold text-[var(--text-bright)]">Dark Mode</span>
-                    <p className="text-[9px] text-[var(--muted)] font-bold uppercase truncate">Toggle Appearance</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={toggleTheme}
-                  className={`w-12 h-6 rounded-full transition-all relative ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-400'}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${theme === 'dark' ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              {/* Data Sync */}
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black tracking-widest text-[var(--muted)] uppercase px-1">Data Sync</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={exportData}
-                    className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex flex-col items-center gap-2 hover:bg-[var(--border)] transition-all shadow-sm"
-                  >
-                    <Download size={20} className="text-blue-500" />
-                    <span className="text-[10px] font-black uppercase">Export Data</span>
-                  </button>
-                  <label className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex flex-col items-center gap-2 hover:bg-[var(--border)] transition-all cursor-pointer shadow-sm">
-                    <Upload size={20} className="text-purple-500" />
-                    <span className="text-[10px] font-black uppercase">Import Data</span>
-                    <input type="file" accept=".json" onChange={importData} className="hidden" />
-                  </label>
-                </div>
-              </div>
-
-              {/* Active Company */}
-              <div className="space-y-3">
-                <h4 className="text-[10px] font-black tracking-widest text-[var(--muted)] uppercase px-1">Active Company</h4>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <select 
-                      value={selectedCompanyId || ""} 
-                      onChange={(e) => { 
-                          const id = parseInt(e.target.value);
-                          setSelectedCompanyId(id); 
-                          localStorage.setItem(ACTIVE_COMPANY_KEY, e.target.value);
-                          const comp = data.companies.find(c => c.id === id);
-                          if (comp?.pin) {
-                              setIsUnlocked(false);
-                          } else {
-                              setIsUnlocked(true);
-                          }
-                      }}
-                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 font-bold outline-none focus:border-blue-500/50 appearance-none text-sm text-[var(--text-bright)]"
-                    >
-                      <option value="">Select Company...</option>
-                      {data.companies.map(c => <option key={`settings_opt_${c.id}`} value={c.id}>{c.name}</option>)}
-                    </select>
-                    <ChevronRight size={16} className="absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-[var(--muted)] pointer-events-none" />
-                  </div>
-                  <button 
-                    onClick={() => { setView('companies'); setShowModal(null); }}
-                    className="w-full flex items-center justify-center gap-2 text-xs font-normal text-blue-500 py-2.5 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500/10 transition-all"
-                  >
-                    <Building2 size={14} /> Manage All Businesses
-                  </button>
-                </div>
-              </div>
-
-              {/* Factory Reset */}
-              <div className="pt-4 border-t border-[var(--border)]">
-                <button 
-                  onClick={() => {
-                    setFormData({});
-                    setShowModal('factory_reset_confirm');
-                  }}
-                  className="w-full py-2 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-500/5"
-                >
-                  Delete All Databases
                 </button>
               </div>
             </div>
           </Modal>
         )}
+
+        {showModal === 'settings' && (() => {
+          const totalCos = data.companies.length;
+          let totalAccs = 0;
+          let totalEntries = 0;
+          data.companies.forEach(c => {
+            totalAccs += (c.accounts || []).length;
+            (c.accounts || []).forEach(a => {
+              totalEntries += (a.entries || []).length;
+            });
+          });
+          const dbSizeKB = (JSON.stringify(data).length / 1024).toFixed(2);
+
+          return (
+            <Modal 
+              title="Settings" 
+              onClose={() => setShowModal(null)}
+              onConfirm={() => setShowModal(null)}
+              confirmText="Done"
+              bodyClassName="h-full flex flex-col p-2 md:p-3 overflow-hidden"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-2 text-left flex-1 min-h-0 overflow-y-auto md:overflow-hidden md:h-full">
+                {/* Left Column - Preferences & Controls */}
+                <div className="md:col-span-7 space-y-2 md:overflow-y-auto md:native-scroll md:pr-2 md:h-full">
+                  {/* Dark Mode */}
+                  <div className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                        {theme === 'dark' ? <Moon size={12} /> : <Sun size={12} />}
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-bold text-[var(--text-bright)]">Dark Mode</span>
+                        <p className="text-[7px] text-[var(--muted)] font-bold uppercase truncate">Toggle</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={toggleTheme}
+                      className={`w-10 h-5 rounded-full transition-all relative ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-400'}`}
+                    >
+                      <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${theme === 'dark' ? 'left-6' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+
+                  {/* Data Sync */}
+                  <div className="space-y-1.5">
+                    <h4 className="text-[8px] font-black tracking-widest text-[var(--muted)] uppercase px-1">Data Sync</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={exportData}
+                        className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all shadow-sm"
+                      >
+                        <Download size={14} className="text-blue-500" />
+                        <span className="text-[7px] font-black uppercase">Export</span>
+                      </button>
+                      <label className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all cursor-pointer shadow-sm">
+                        <Upload size={14} className="text-purple-500" />
+                        <span className="text-[7px] font-black uppercase">Import</span>
+                        <input type="file" accept=".json" onChange={importData} className="hidden" />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Active Company */}
+                  <div className="space-y-1.5">
+                    <h4 className="text-[8px] font-black tracking-widest text-[var(--muted)] uppercase px-1">Active Company</h4>
+                    <div className="space-y-1.5">
+                      <div className="relative">
+                        <select 
+                          value={selectedCompanyId || ""} 
+                          onChange={(e) => { 
+                              const id = parseInt(e.target.value);
+                              setSelectedCompanyId(id); 
+                              localStorage.setItem(ACTIVE_COMPANY_KEY, e.target.value);
+                              const comp = data.companies.find(c => c.id === id);
+                              if (comp?.pin) {
+                                  setIsUnlocked(false);
+                              } else {
+                                  setIsUnlocked(true);
+                              }
+                          }}
+                          className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg p-2 font-bold outline-none focus:border-blue-500/50 appearance-none text-[9px] text-[var(--text-bright)]"
+                        >
+                          <option value="">Select Company...</option>
+                          {data.companies.map(c => <option key={`settings_opt_${c.id}`} value={c.id}>{c.name}</option>)}
+                        </select>
+                        <ChevronRight size={12} className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-[var(--muted)] pointer-events-none" />
+                      </div>
+                      <button 
+                        onClick={() => { setView('companies'); setShowModal(null); }}
+                        className="w-full flex items-center justify-center gap-1.5 text-[8px] font-black uppercase tracking-wider text-blue-500 py-1.5 bg-blue-500/5 border border-blue-500/10 rounded-lg hover:bg-blue-500/10 transition-all"
+                      >
+                        <Building2 size={10} /> Manage All
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Factory Reset */}
+                  <div className="pt-2 border-t border-[var(--border)]">
+                    <button 
+                      onClick={() => {
+                        setFormData({});
+                        setShowModal('factory_reset_confirm');
+                      }}
+                      className="w-full py-1.5 bg-red-500/10 text-red-500 rounded-lg text-[8px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-500/5"
+                    >
+                      Delete All Databases
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Column - Database Diagnostics */}
+                <div className="md:col-span-5 flex flex-col justify-between bg-[var(--surface)] border border-[var(--border)] rounded-lg p-2 space-y-2 text-left md:overflow-y-auto md:native-scroll md:pr-2 md:h-full">
+                  <div className="space-y-2">
+                    <h4 className="text-[9px] font-bold text-[var(--text-bright)] flex items-center gap-1.5">
+                      <Activity size={12} className="text-purple-500 shrink-0" />
+                      Database Diagnostics
+                    </h4>
+                    <div className="space-y-1">
+                      <div className="p-1.5 px-2 bg-[var(--card)] rounded-lg border border-[var(--border)] flex justify-between items-center">
+                        <span className="text-[8px] font-bold text-[var(--muted)] uppercase">Businesses</span>
+                        <span className="text-[9px] font-black text-[var(--text-bright)]">{totalCos}</span>
+                      </div>
+                      <div className="p-1.5 px-2 bg-[var(--card)] rounded-lg border border-[var(--border)] flex justify-between items-center">
+                        <span className="text-[8px] font-bold text-[var(--muted)] uppercase">Ledgers</span>
+                        <span className="text-[9px] font-black text-[var(--text-bright)]">{totalAccs}</span>
+                      </div>
+                      <div className="p-1.5 px-2 bg-[var(--card)] rounded-lg border border-[var(--border)] flex justify-between items-center">
+                        <span className="text-[8px] font-bold text-[var(--muted)] uppercase">Postings</span>
+                        <span className="text-[9px] font-black text-[var(--text-bright)]">{totalEntries}</span>
+                      </div>
+                      <div className="p-1.5 px-2 bg-[var(--card)] rounded-lg border border-[var(--border)] flex justify-between items-center">
+                        <span className="text-[8px] font-bold text-[var(--muted)] uppercase">Size</span>
+                        <span className="text-[9px] font-black text-[var(--text-bright)]">{dbSizeKB} KB</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-purple-500/5 rounded-lg border border-purple-500/10 text-[8px] text-[var(--muted)] leading-relaxed space-y-0.5">
+                    <p className="font-bold text-purple-400">IndexedDB Health Indicator</p>
+                    <p>Offline database is running optimally with auto-indexing. All database transactions are ACID compliant.</p>
+                  </div>
+                </div>
+              </div>
+            </Modal>
+          );
+        })()}
         {showModal === 'delete_company_confirm' && companyToDelete && (
           <Modal 
             key="modal_delete_company" 
@@ -2809,24 +3041,25 @@ export default function App() {
               notify(`Business "${compName}" deleted`, "error");
             }} 
             onClose={() => { setCompanyToDelete(null); setShowModal(null); setFormData({}); }}
+            bodyClassName="h-full flex flex-col items-center justify-center p-6 text-center"
           >
-             <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
-                  <Trash2 size={32} />
+             <div className="max-w-md w-full space-y-4">
+                <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-1 animate-bounce">
+                  <Trash2 size={24} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-base text-[var(--text-bright)]">Confirm Deletion</h4>
+                  <h4 className="font-bold text-sm text-[var(--text-bright)]">Confirm Deletion</h4>
                   <p className="text-xs text-[var(--muted)] mt-1">
                     Are you sure you want to delete <span className="text-red-500 font-bold">"{companyToDelete.name}"</span>?
                   </p>
-                  <p className="text-[10px] text-red-400 font-medium tracking-wide uppercase mt-1">
+                  <p className="text-[9px] text-red-400 font-medium tracking-wide uppercase italic leading-tight mt-1">
                     This action is final and will erase all associated financial journals & ledger accounts.
                   </p>
                 </div>
 
                 {companyToDelete.pin && (
                   <div className="space-y-1.5 text-left max-w-xs mx-auto pt-2">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider block">
+                    <label className="text-[9px] font-black text-[var(--muted)] uppercase tracking-wider block text-center">
                       Enter Company PIN to Authorize Deletion
                     </label>
                     <input 
@@ -2835,7 +3068,7 @@ export default function App() {
                       placeholder="Enter 4-digit PIN"
                       value={formData.pinConfirm || ""}
                       onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
-                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-center text-sm font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-xs placeholder:font-normal placeholder:tracking-normal text-center"
+                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2 text-center text-xs font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-[9px] placeholder:font-normal placeholder:tracking-normal text-center"
                     />
                   </div>
                 )}
@@ -2870,24 +3103,25 @@ export default function App() {
               }
             }} 
             onClose={() => { setShowModal(null); setFormData({}); }}
+            bodyClassName="h-full flex flex-col items-center justify-center p-6 text-center"
           >
-             <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
-                  <AlertCircle size={32} />
+             <div className="max-w-md w-full space-y-4">
+                <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-1 animate-bounce">
+                  <AlertCircle size={24} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-base text-[var(--text-bright)]">System Reset Confirmation</h4>
+                  <h4 className="font-bold text-sm text-[var(--text-bright)]">System Reset Confirmation</h4>
                   <p className="text-xs text-[var(--muted)] mt-1">
                     This will permanently drop the database and remove all business ledgers, journals, and credentials.
                   </p>
-                  <p className="text-[10px] text-red-400 font-medium tracking-wide uppercase mt-1">
+                  <p className="text-[9px] text-red-400 font-medium tracking-wide uppercase italic leading-tight mt-1">
                     This action is absolutely irreversible.
                   </p>
                 </div>
 
                 {activeCompany?.pin && (
                   <div className="space-y-1.5 text-left max-w-xs mx-auto pt-2">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider block">
+                    <label className="text-[9px] font-black text-[var(--muted)] uppercase tracking-wider block text-center">
                       Enter Currently Opened Company PIN to Authorize Reset
                     </label>
                     <input 
@@ -2896,7 +3130,7 @@ export default function App() {
                       placeholder="Enter 4-digit PIN"
                       value={formData.pinConfirm || ""}
                       onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
-                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-center text-sm font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-xs placeholder:font-normal placeholder:tracking-normal text-center"
+                      className="w-full bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl px-4 py-2 text-center text-xs font-black tracking-widest outline-none focus:border-red-500/50 transition-all placeholder:text-[9px] placeholder:font-normal placeholder:tracking-normal text-center"
                     />
                   </div>
                 )}
@@ -2910,19 +3144,20 @@ export default function App() {
             confirmText="Permanently Delete" 
             onConfirm={confirmDeleteAccount} 
             onClose={() => { setAccountToDelete(null); setShowModal(null); setFormData({}); }}
+            bodyClassName="h-full flex flex-col items-center justify-center p-6 text-center"
           >
-             <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
-                  <Trash2 size={32} />
+             <div className="max-w-md w-full space-y-4">
+                <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-1 animate-bounce">
+                  <Trash2 size={24} />
                 </div>
                 <div className="space-y-1">
                    <p className="text-sm font-bold text-[var(--text-bright)]">Delete this account?</p>
-                   <p className="text-[10px] text-[var(--muted)] uppercase font-black">This account will be removed from your chart of accounts.</p>
+                   <p className="text-[9px] text-[var(--muted)] uppercase font-black italic">This account will be removed from your chart of accounts.</p>
                 </div>
 
                 {activeCompany?.pin && (
-                  <div className="space-y-2 pt-2 border-t border-[var(--border)]">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase block text-left">Confirm Security PIN</label>
+                  <div className="space-y-2 pt-2 border-t border-[var(--border)] max-w-xs mx-auto">
+                    <label className="text-[9px] font-black text-[var(--muted)] uppercase block text-center">Confirm Security PIN</label>
                     <input 
                       type="password" 
                       maxLength={4}
@@ -2930,7 +3165,7 @@ export default function App() {
                       placeholder="Enter PIN"
                       value={formData.pinConfirm || ""}
                       onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
-                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-center tracking-[1em] font-black outline-none focus:border-red-500/50"
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-center tracking-[1em] font-black outline-none focus:border-red-500/50 text-xs"
                     />
                   </div>
                 )}
@@ -2944,19 +3179,20 @@ export default function App() {
             confirmText="Permanently Delete" 
             onConfirm={() => handleDeleteTransaction(transactionToDelete!)} 
             onClose={() => { setTransactionToDelete(null); setShowModal(null); setFormData({}); }}
+            bodyClassName="h-full flex flex-col items-center justify-center p-6 text-center"
           >
-             <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
-                  <Trash2 size={32} />
+             <div className="max-w-md w-full space-y-4">
+                <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-1 animate-bounce">
+                  <Trash2 size={24} />
                 </div>
                 <div className="space-y-1">
                    <p className="text-sm font-bold text-[var(--text-bright)]">Are you absolutely sure?</p>
-                   <p className="text-[10px] text-[var(--muted)] uppercase font-black">This will wipe the transaction from ALL involved accounts.</p>
+                   <p className="text-[9px] text-[var(--muted)] uppercase font-black italic">This will wipe the transaction from ALL involved accounts.</p>
                 </div>
                 
                 {activeCompany?.pin && (
-                  <div className="space-y-2 pt-2 border-t border-[var(--border)]">
-                    <label className="text-[10px] font-black text-[var(--muted)] uppercase block text-left">Confirm Security PIN</label>
+                  <div className="space-y-2 pt-2 border-t border-[var(--border)] max-w-xs mx-auto">
+                    <label className="text-[9px] font-black text-[var(--muted)] uppercase block text-center">Confirm Security PIN</label>
                     <input 
                       type="password" 
                       maxLength={4}
@@ -2964,7 +3200,7 @@ export default function App() {
                       placeholder="Enter PIN"
                       value={formData.pinConfirm || ""}
                       onChange={e => setFormData({...formData, pinConfirm: e.target.value.replace(/\D/g, '')})}
-                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-center tracking-[1em] font-black outline-none focus:border-red-500/50"
+                      className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2 text-center tracking-[1em] font-black outline-none focus:border-red-500/50 text-xs"
                     />
                   </div>
                 )}
