@@ -31,6 +31,12 @@
     --success: #10B981;
     --warning: #F59E0B;
     --danger: #EF4444;
+
+    /* Safe Area Insets for Mobile */
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
   }
 
   [data-theme="light"] {
@@ -51,10 +57,31 @@
   body {
     @apply bg-[var(--bg)] text-[var(--text)] font-sans antialiased min-h-screen transition-colors duration-300;
     background-attachment: fixed;
+    /* Prevent overscroll bounce on mobile */
+    overflow-x: hidden;
+    position: relative;
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator {
     @apply invert dark:invert-0;
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: var(--sat);
+  }
+  .pb-safe {
+    padding-bottom: var(--sab);
+  }
+  .mt-safe {
+    margin-top: var(--sat);
+  }
+  .mb-safe {
+    margin-bottom: var(--sab);
+  }
+  .min-h-screen-safe {
+    min-height: calc(100vh + var(--sat) + var(--sab));
   }
 }
 
@@ -64,7 +91,9 @@
   }
 
   .glass-header {
-    @apply sticky top-4 z-50 mx-4 px-4 py-3 rounded-2xl bg-[var(--card)]/80 backdrop-blur-xl border border-[var(--border)] shadow-2xl;
+    @apply sticky top-0 z-50 px-6 h-14 bg-[var(--surface)]/80 backdrop-blur-xl border-b border-[var(--border)] flex items-center justify-between shadow-lg;
+    padding-top: var(--sat);
+    height: calc(3.5rem + var(--sat));
   }
 
   .mobile-card {

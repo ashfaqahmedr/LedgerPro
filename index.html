@@ -9,6 +9,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="apple-touch-icon" href="./pwa-192x192.png" />
     <link rel="icon" type="image/png" href="./pwa-192x192.png" />
+    <script>
+      // Clear any existing service workers that might be stuck with old paths
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister().then(function() {
+              console.log('ServiceWorker unregistered');
+            });
+          }
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

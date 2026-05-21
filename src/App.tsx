@@ -445,7 +445,7 @@ const LockScreen = ({ company, onUnlock, onBack }: { company: Company, onUnlock:
   };
 
   return (
-    <div className="fixed inset-0 z-[200] bg-[var(--bg)] flex flex-col items-center justify-center p-6 bg-radial-gradient">
+    <div className="fixed inset-0 z-[200] bg-[var(--bg)] flex flex-col items-center justify-center p-6 bg-radial-gradient pt-safe pb-safe">
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -3170,7 +3170,7 @@ export default function App() {
       )}
 
       {/* Dynamic Header */}
-      <header className="glass-header flex items-center justify-between !mx-0 !rounded-none !top-0 !bg-[var(--surface)]/80 backdrop-blur-xl border-b border-[var(--border)] px-6 h-14 sticky z-[60]">
+      <header className="glass-header sticky top-0 z-[60] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white shadow-lg">
             <TrendingUp size={18} />
@@ -3228,7 +3228,7 @@ export default function App() {
 
       {/* Mobile Navigation */}
       {activeCompany && isUnlocked && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe shadow-2xl">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] shadow-2xl pb-safe">
           <div className="flex justify-around items-center h-16 px-4 max-w-lg mx-auto relative group gap-1">
              <button 
                onClick={() => setView('dashboard')} 

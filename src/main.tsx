@@ -3,9 +3,12 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { registerSW } from 'virtual:pwa-register';
+import { Capacitor } from '@capacitor/core';
 
-// Register service worker for PWA support
-registerSW({ immediate: true });
+// Register service worker for PWA support only on web
+if (!Capacitor.isNativePlatform()) {
+  registerSW({ immediate: true });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
