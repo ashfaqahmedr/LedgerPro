@@ -5,6 +5,8 @@ dist/
 # dist/
 coverage/
 .DS_Store
+Ledger*
+ledgerpro*
 *.log
 .env*
 !.env.example

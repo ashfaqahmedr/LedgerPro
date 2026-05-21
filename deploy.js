@@ -1,5 +1,6 @@
 import FtpDeploy from "ftp-deploy";
 import dotenv from "dotenv";
+import { execSync } from "child_process";
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ const config = {
   localRoot: "./dist",
   remoteRoot: process.env.FTP_REMOTE_ROOT || "/public_html/accpro",
   include: ["*", "**/*"],
-  deleteRemote: false,
+  deleteRemote: true,
   forcePasv: true,
   sftp: process.env.FTP_SECURE === "true",
   secure: true,
@@ -31,6 +32,22 @@ if (!config.user || !config.password || !config.host) {
   console.error("  FTP_PORT=21");
   console.error("  FTP_REMOTE_ROOT=\"/public_html/accpro\"");
   console.error("  FTP_SECURE=false");
+  process.exit(1);
+}
+
+// 1. Build the production application programmatically with the correct base path for web deployment
+try {
+  console.log("Building application for production with base path /accpro/...");
+  execSync("npx vite build", {
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      VITE_BASE_PATH: "/accpro/"
+    }
+  });
+  console.log("Build compiled successfully!\n");
+} catch (buildErr) {
+  console.error("Build failed. Aborting deployment.");
   process.exit(1);
 }
 

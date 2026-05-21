@@ -12,7 +12,7 @@
     "cap:sync": "npx cap sync",
     "cap:open:android": "npx cap open android",
     "mobile:build": "npm run build && npx cap sync",
-    "deploy": "npm run build && node deploy.js"
+    "deploy": "node deploy.js"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.4",
