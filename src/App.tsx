@@ -186,6 +186,15 @@ const parseDate = (str: string) => {
   return new Date(y, m - 1, d);
 };
 
+const formatDateLong = (str: string) => {
+  if (!str) return "-";
+  const date = parseDate(str);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 const getDatesForRange = (range: DateRangeType, custom?: DateRange): DateRange => {
   const now = new Date();
   
@@ -261,8 +270,8 @@ const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, d
     >
       {/* Header — pushed below the system status bar */}
       <div
-        className="px-5 border-b border-[var(--border)] flex justify-between items-center shrink-0 min-h-[56px] bg-[var(--card)]"
-        style={{ paddingTop: 'calc(var(--sat) + 0.5rem)', paddingBottom: '0.5rem' }}
+        className="px-3 border-b border-[var(--border)] flex justify-between items-center shrink-0 min-h-[44px] bg-[var(--card)]"
+        style={{ paddingTop: 'calc(var(--sat) + 0.25rem)', paddingBottom: '0.25rem' }}
       >
         <h3 className="text-base font-bold text-[var(--text-bright)] tracking-tight">{title}</h3>
         <button onClick={onClose} className="p-2 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--muted)] hover:text-[var(--text-bright)]">
@@ -647,12 +656,63 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
         </div>
         <div className="flex items-center gap-2">
           <button 
-            onClick={handleExportReport}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
-            title="Export and Share"
+            onClick={() => handleExportReport()}
+            className="flex items-center gap-2 px-3 py-2.5 bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[var(--border)] transition-all shadow-sm"
+            title="Download PDF"
           >
-            {Capacitor.isNativePlatform() ? <Share2 size={14} /> : <Download size={14} />}
-            {Capacitor.isNativePlatform() ? 'Share / Save' : 'Download'}
+            <Download size={14} className="text-blue-500" />
+            Save
+          </button>
+          <button
+            onClick={() => {
+              if (activeTab === 'pl') {
+                const rows = [
+                  ['Operating Income', '', 'Total Revenue'],
+                  ...plData.revenues.map(r => [r.name, '', formatCurrency(r.amount)]),
+                  ['Gross Profit', '', formatCurrency(plData.totalRev)],
+                  ['', '', ''],
+                  ['Operating Expenses', '', 'Total Spent'],
+                  ...plData.expenses.map(e => [e.name, '', `(${formatCurrency(e.amount)})`]),
+                  ['Total Expenses', '', `(${formatCurrency(plData.totalExp)})`],
+                  ['', '', ''],
+                  [plData.netIncome >= 0 ? 'NET PROFIT' : 'NET LOSS', '', formatCurrency(plData.netIncome)]
+                ];
+                exportToPDF('Profit and Loss Statement', ['Description', '', 'Amount'], rows, [{ label: 'Net Income', value: formatCurrency(plData.netIncome) }], 'share');
+              } else if (activeTab === 'bs') {
+                const assets = accountsByType('asset');
+                const liabilities = accountsByType('liability');
+                const equity = accountsByType('equity');
+                const rows = [
+                  ['ASSETS', '', ''],
+                  ...assets.map(a => [a.name, '', formatCurrency(getAccountBalance(a, activeRange.end))]),
+                  ['TOTAL ASSETS', '', formatCurrency(assets.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0))],
+                  ['', '', ''],
+                  ['LIABILITIES & EQUITY', '', ''],
+                  ['Liabilities', '', ''],
+                  ...liabilities.map(l => [l.name, '', formatCurrency(getAccountBalance(l, activeRange.end))]),
+                  ['Equity', '', ''],
+                  ...equity.map(e => [e.name, '', formatCurrency(getAccountBalance(e, activeRange.end))]),
+                  ['Retained Earnings', '', formatCurrency(plData.netIncome)],
+                  ['TOTAL LIABILITIES & EQUITY', '', formatCurrency(liabilities.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0) + equity.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0) + plData.netIncome)]
+                ];
+                exportToPDF('Balance Sheet', ['Account', '', 'Balance'], rows, undefined, 'share');
+              } else if (activeTab === 'tb') {
+                const rows = tbData.map(r => [
+                  `${r.code} - ${r.name}`,
+                  r.debit > 0 ? formatCurrency(r.debit) : '-',
+                  r.credit > 0 ? formatCurrency(r.credit) : '-'
+                ]);
+                const totalDr = tbData.reduce((s: any, r: any) => s + r.debit, 0);
+                const totalCr = tbData.reduce((s: any, r: any) => s + r.credit, 0);
+                rows.push(['TOTALS', formatCurrency(totalDr), formatCurrency(totalCr)]);
+                exportToPDF('Trial Balance', ['Account', 'Debit', 'Credit'], rows, undefined, 'share');
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
+            title="Share PDF"
+          >
+            <Share2 size={14} />
+            Share
           </button>
           <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
         </div>
@@ -951,9 +1011,9 @@ const JournalEntryModal = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-0 h-full overflow-hidden">
         {/* Left Column - Forms, Actions, Lines Table, Totals */}
-        <div className="md:col-span-7 flex flex-col h-full overflow-hidden p-5 space-y-4">
+        <div className="md:col-span-7 flex flex-col h-full overflow-hidden p-1 space-y-1">
           {/* Main Header */}
-          <div className="grid grid-cols-2 gap-3 shrink-0">
+          <div className="grid grid-cols-2 gap-1.5 shrink-0">
             <div className="space-y-1">
               <label className="text-[10px] font-black text-[var(--muted)]">Date</label>
               <input 
@@ -1022,10 +1082,10 @@ const JournalEntryModal = ({
             <table className="w-full text-left text-xs border-collapse">
               <thead className="bg-[var(--card)] sticky top-0 z-10">
                 <tr>
-                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account</th>
-                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
-                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
-                  <th className="p-2.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
+                  <th className="p-1.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)]">Account</th>
+                  <th className="p-1.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Debit</th>
+                  <th className="p-1.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] text-right">Credit</th>
+                  <th className="p-1.5 text-[9px] font-black text-[var(--muted)] border-b border-[var(--border)] w-8"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
@@ -1037,17 +1097,17 @@ const JournalEntryModal = ({
                       className="hover:bg-[var(--card)] transition-colors cursor-pointer group"
                       onClick={() => handleOpenEditLine(item)}
                     >
-                      <td className="p-2.5 text-left">
+                      <td className="p-1.5 text-left">
                         <div className="font-bold text-[var(--text-bright)] truncate max-w-[150px]">{acc ? acc.name : 'Select Account...'}</div>
                         <div className="text-[8px] text-[var(--muted)]">{acc?.code}</div>
                       </td>
-                      <td className="p-2.5 text-right font-mono font-bold text-teal-400">
+                      <td className="p-1.5 text-right font-mono font-bold text-teal-400">
                         {parseFloat(item.debit) > 0 ? parseFloat(item.debit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                       </td>
-                      <td className="p-2.5 text-right font-mono font-bold text-orange-400">
+                      <td className="p-1.5 text-right font-mono font-bold text-orange-400">
                         {parseFloat(item.credit) > 0 ? parseFloat(item.credit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                       </td>
-                      <td className="p-2.5 text-right">
+                      <td className="p-1.5 text-right">
                         <button 
                           onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
                           className="p-1 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
@@ -1059,7 +1119,7 @@ const JournalEntryModal = ({
                   );
                 }) : (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-[var(--muted)] text-[10px] italic">No lines added.</td>
+                    <td colSpan={4} className="p-4 text-center text-[var(--muted)] text-[10px] italic">No lines added.</td>
                   </tr>
                 )}
               </tbody>
@@ -1067,7 +1127,7 @@ const JournalEntryModal = ({
           </div>
 
           {/* Footer Totals */}
-          <div className="p-3 bg-[var(--bg)] rounded-xl border border-dashed border-[var(--border)] flex justify-between items-center shrink-0">
+          <div className="p-1.5 bg-[var(--bg)] rounded-xl border border-dashed border-[var(--border)] flex justify-between items-center shrink-0">
             <div className="flex flex-col">
               <span className="text-[8px] font-black text-[var(--muted)]">Dr</span>
               <span className="text-teal-400 font-bold text-xs tracking-tight">{formatCurrency(totalDr)}</span>
@@ -1403,6 +1463,23 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const triggerRefresh = useCallback(() => setRefreshKey(prev => prev + 1), []);
 
+  const performAutoBackup = useCallback(async (currentData: AppData) => {
+    if (!Capacitor.isNativePlatform()) return;
+    try {
+      await ensureLedgerProDir();
+      const json = JSON.stringify(currentData, null, 2);
+      await Filesystem.writeFile({
+        path: 'LedgerPro/auto_backup.json',
+        data: json,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8
+      });
+      console.log('Auto-backup completed');
+    } catch (err) {
+      console.error('Auto-backup failed:', err);
+    }
+  }, []);
+
   // Initialize
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
@@ -1446,9 +1523,19 @@ export default function App() {
     Keyboard.setAccessoryBarVisible({ isVisible: false }).catch(() => {});
     Keyboard.setScroll({ isDisabled: false }).catch(() => {});
 
+    // Auto-backup on app pause/close
+    const appStateListener = CapApp.addListener('appStateChange', ({ isActive }) => {
+      if (!isActive) {
+        // App is going to background or closing
+        performAutoBackup(data);
+      }
+    });
+
     // Clean up listeners on unmount
-    return () => {};
-  }, []);
+    return () => {
+      appStateListener.then(h => h.remove());
+    };
+  }, [data, performAutoBackup]);
 
   // ── Android back button ───────────────────────────────────────────────────
   useEffect(() => {
@@ -1908,31 +1995,40 @@ export default function App() {
     }).reverse();
   }, []);
 
-  const saveAndShareFile = async (filename: string, content: string, mimeType: string, isBase64: boolean = false) => {
+  const ensureLedgerProDir = async () => {
+    if (!Capacitor.isNativePlatform()) return;
+    try {
+      await Filesystem.mkdir({
+        path: 'LedgerPro',
+        directory: Directory.Documents,
+        recursive: true
+      });
+    } catch (e) {
+      // Folder likely exists
+    }
+  };
+
+  const saveFileLocally = async (filename: string, content: string, mimeType: string, isBase64: boolean = false) => {
     if (Capacitor.isNativePlatform()) {
       try {
-        // For PDF, jsPDF output('datauristring') includes the prefix "data:application/pdf;filename=generated.pdf;base64,"
-        // Filesystem.writeFile 'data' should be just the base64 part if we don't specify encoding,
-        // OR we can pass the whole thing if it's a data URI? Actually it's better to pass just the base64.
+        await ensureLedgerProDir();
         let cleanContent = content;
         if (isBase64 && content.includes('base64,')) {
           cleanContent = content.split('base64,')[1];
         }
 
         const result = await Filesystem.writeFile({
-          path: filename,
+          path: `LedgerPro/${filename}`,
           data: cleanContent,
-          directory: Directory.Cache,
+          directory: Directory.Documents,
           encoding: isBase64 ? undefined : Encoding.UTF8
         });
 
-        await Share.share({
-          title: filename,
-          url: result.uri,
-        });
+        notify(`Downloaded to Documents/LedgerPro: ${filename}`, "success");
+        return result.uri;
       } catch (err) {
-        console.error('Error sharing file:', err);
-        notify("Action failed", "error");
+        console.error('Error saving file locally:', err);
+        notify("Download failed", "error");
       }
     } else {
       const blob = isBase64
@@ -1947,7 +2043,36 @@ export default function App() {
     }
   };
 
-  const exportToPDF = useCallback(async (title: string, headers: string[], rows: any[][], summary?: { label: string, value: string }[]) => {
+  const shareFile = async (filename: string, content: string, isBase64: boolean = false) => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        let cleanContent = content;
+        if (isBase64 && content.includes('base64,')) {
+          cleanContent = content.split('base64,')[1];
+        }
+
+        // Use Cache for sharing to avoid cluttering Documents if they only want to share
+        const result = await Filesystem.writeFile({
+          path: filename,
+          data: cleanContent,
+          directory: Directory.Cache,
+          encoding: isBase64 ? undefined : Encoding.UTF8
+        });
+
+        await Share.share({
+          title: filename,
+          url: result.uri,
+        });
+      } catch (err) {
+        console.error('Error sharing file:', err);
+        notify("Share failed", "error");
+      }
+    } else {
+      notify("Sharing is available on mobile devices", "error");
+    }
+  };
+
+  const exportToPDF = useCallback(async (title: string, headers: string[], rows: any[][], summary?: { label: string, value: string }[], mode: 'download' | 'share' = 'download') => {
     const doc = new jsPDF();
     const period = rangeType === 'all' ? 'All Time' : `${activeRange.start} to ${activeRange.end}`;
     const margin = 10;
@@ -2025,10 +2150,14 @@ export default function App() {
       doc.putTotalPages(totalPagesExp);
     }
 
-    const filename = `${title.replace(/\s+/g, '_')}.pdf`;
+    const filename = `${title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
     if (Capacitor.isNativePlatform()) {
       const pdfBase64 = doc.output('datauristring');
-      await saveAndShareFile(filename, pdfBase64, 'application/pdf', true);
+      if (mode === 'share') {
+        await shareFile(filename, pdfBase64, true);
+      } else {
+        await saveFileLocally(filename, pdfBase64, 'application/pdf', true);
+      }
     } else {
       doc.save(filename);
     }
@@ -2299,12 +2428,43 @@ export default function App() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={handleExportDashboard}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
-              title={Capacitor.isNativePlatform() ? 'Share Transaction Register' : 'Download Transaction Register'}
+              onClick={() => handleExportDashboard()}
+              className="flex items-center gap-2 px-3 py-2.5 bg-[var(--surface)] text-[var(--text-bright)] border border-[var(--border)] rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[var(--border)] transition-all shadow-sm"
+              title="Download Register"
             >
-              {Capacitor.isNativePlatform() ? <Share2 size={14} /> : <Download size={14} />}
-              {Capacitor.isNativePlatform() ? 'Share / Save' : 'Download'}
+              <Download size={14} className="text-blue-500" />
+              Save
+            </button>
+            <button
+              onClick={() => {
+                const allTx: any[] = [];
+                activeCompany.accounts.forEach(acc => {
+                  acc.entries
+                    .filter(e => e.date >= activeRange.start && e.date <= activeRange.end)
+                    .forEach(e => {
+                      const contra = activeCompany.accounts.find(a => a.id === e.contraAccountId);
+                      allTx.push([
+                        e.date,
+                        `${acc.code} - ${acc.name}`,
+                        e.description || '-',
+                        contra ? contra.name : 'External',
+                        e.reference || '-',
+                        e.type === 'debit'  ? formatCurrency(e.amount) : '-',
+                        e.type === 'credit' ? formatCurrency(e.amount) : '-',
+                      ]);
+                    });
+                });
+                allTx.sort((a, b) => a[0].localeCompare(b[0]));
+                const totalDr = activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0);
+                const totalCr = activeCompany.accounts.reduce((sum, a) => sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0);
+                const closing = activeCompany.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0);
+                exportToPDF(`Transaction Register`, ['Date', 'Account', 'Description', 'Contra', 'Ref', 'Debit', 'Credit'], allTx, [{ label: 'Total Debits',  value: formatCurrency(totalDr) }, { label: 'Total Credits', value: formatCurrency(totalCr) }, { label: 'Closing Balance', value: formatCurrency(closing) }], 'share');
+              }}
+              className="flex items-center gap-2 px-3 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
+              title="Share Register"
+            >
+              <Share2 size={14} />
+              Share
             </button>
             <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
           </div>
@@ -2383,7 +2543,7 @@ export default function App() {
                 >
                   <div className="flex justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[8px] font-black text-[var(--muted)] bg-[var(--bg)] px-1.5 py-0.5 rounded border border-[var(--border)]">{entry.date}</span>
+                      <span className="text-[8px] font-black text-[var(--muted)] bg-[var(--bg)] px-1.5 py-0.5 rounded border border-[var(--border)]">{formatDateLong(entry.date)}</span>
                       {entry.reference && <span className="text-[8px] font-black text-blue-400 border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 rounded">{entry.reference}</span>}
                     </div>
                     <EllipsisMenu options={[
@@ -2493,6 +2653,36 @@ export default function App() {
           >
             <ArrowUpDown size={18} />
           </button>
+          <button
+            onClick={() => {
+              const rows = filtered.map(acc => [
+                acc.code,
+                acc.name,
+                acc.type,
+                formatCurrency(getAccountBalance(acc, activeRange.end))
+              ]);
+              exportToPDF("Chart of Accounts", ["Code", "Name", "Type", "Balance"], rows);
+            }}
+            className="w-11 h-11 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-[var(--muted)] hover:text-blue-400 transition-all active:scale-95"
+            title="Save Chart of Accounts"
+          >
+            <Download size={18} />
+          </button>
+          <button
+            onClick={() => {
+              const rows = filtered.map(acc => [
+                acc.code,
+                acc.name,
+                acc.type,
+                formatCurrency(getAccountBalance(acc, activeRange.end))
+              ]);
+              exportToPDF("Chart of Accounts", ["Code", "Name", "Type", "Balance"], rows, undefined, 'share');
+            }}
+            className="w-11 h-11 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-[var(--muted)] hover:text-blue-400 transition-all active:scale-95"
+            title="Share Chart of Accounts"
+          >
+            <Share2 size={18} />
+          </button>
           <button 
             onClick={() => openNewAccountModal()}
             className="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 active:scale-95 transition-all shrink-0"
@@ -2509,7 +2699,7 @@ export default function App() {
               <div 
                 key={acc.id}
                 onClick={() => { setSelectedAccountId(acc.id); setView('journal'); }}
-                className="p-4 bg-[var(--surface)] rounded-2xl border border-[var(--border)] flex justify-between items-center active:scale-[0.98] transition-all cursor-pointer shadow-sm relative z-0 hover:z-30 focus-within:z-30 hover:border-blue-500/30"
+                className="p-3 bg-[var(--surface)] rounded-xl border border-[var(--border)] flex justify-between items-center active:scale-[0.98] transition-all cursor-pointer shadow-sm relative z-0 hover:z-30 focus-within:z-30 hover:border-blue-500/30"
               >
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-[var(--text-bright)] leading-tight">{acc.name}</span>
@@ -2627,11 +2817,42 @@ export default function App() {
                 {journalSort === 'desc' ? <ArrowDownNarrowWide size={18} /> : <ArrowUpNarrowWide size={18} />}
               </button>
               <button 
-                onClick={handleExportJournal}
+                onClick={() => handleExportJournal()}
                 className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-colors"
-                title={Capacitor.isNativePlatform() ? "Share / Save PDF" : "Export PDF"}
+                title="Download Ledger"
               >
-                {Capacitor.isNativePlatform() ? <Share2 size={18} /> : <FileDown size={18} />}
+                <Download size={18} />
+              </button>
+              <button
+                onClick={() => {
+                    const opening = getAccountBalance(activeAccount, formatDate(new Date(parseDate(activeRange.start).getTime() - 86400000)));
+                    const closing = getAccountBalance(activeAccount, activeRange.end);
+                    const totalDebit = filteredEntries.reduce((s, e) => e.type === 'debit' ? s + e.amount : s, 0);
+                    const totalCredit = filteredEntries.reduce((s, e) => e.type === 'credit' ? s + e.amount : s, 0);
+                    const rows = filteredEntries.map(e => {
+                        const contra = activeCompany?.accounts.find(a => a.id === e.contraAccountId);
+                        const contraStr = contra ? `${contra.name} (${contra.code})` : 'External';
+                        const isNormalDebit = typeInfo?.normal === 'debit';
+                        return [
+                            `${e.date}\n${e.description}`,
+                            contraStr,
+                            e.type === 'debit' ? `${isNormalDebit ? '(+)' : '(-)'} ${formatCurrency(e.amount)}` : '-',
+                            e.type === 'credit' ? `${!isNormalDebit ? '(+)' : '(-)'} ${formatCurrency(e.amount)}` : '-',
+                            formatCurrency(e.runningBalance)
+                        ];
+                    });
+                    const summary = [
+                        { label: "Opening Bal", value: formatCurrency(opening) },
+                        { label: "Total Dr", value: formatCurrency(totalDebit) },
+                        { label: "Total Cr", value: formatCurrency(totalCredit) },
+                        { label: "Closing Bal", value: formatCurrency(closing) }
+                    ];
+                    exportToPDF(`Ledger: ${activeAccount.name}`, ["Date Description", "Contra Account", "Debit (+)", "Credit (-)", "Balance"], rows, summary, 'share');
+                }}
+                className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-colors"
+                title="Share Ledger"
+              >
+                <Share2 size={18} />
               </button>
               <button 
                 onClick={openNewEntryModal}
@@ -2694,9 +2915,9 @@ export default function App() {
                 className="p-3 bg-[var(--surface)] rounded-xl border border-[var(--border)] relative z-0 hover:z-30 focus-within:z-30 active:scale-[0.99] transition-all cursor-pointer hover:border-blue-500/30"
                 onClick={() => handleEditTransaction(entry.transactionId)}
               >
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-black text-[var(--muted)] bg-[var(--bg)] px-2 py-0.5 rounded border border-[var(--border)] uppercase">{entry.date}</span>
+                    <span className="text-[9px] font-black text-[var(--muted)] bg-[var(--bg)] px-2 py-0.5 rounded border border-[var(--border)] uppercase">{formatDateLong(entry.date)}</span>
                     {entry.reference && <span className="text-[9px] font-black text-blue-400 border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 rounded uppercase">{entry.reference}</span>}
                   </div>
                   <div className="flex items-center gap-2">
@@ -3123,13 +3344,28 @@ export default function App() {
                   {/* Data Sync */}
                   <div className="space-y-1.5">
                     <h4 className="text-[8px] font-black tracking-widest text-[var(--muted)] uppercase px-1">Data Sync</h4>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <button 
-                        onClick={exportData}
+                        onClick={async () => {
+                            const json = JSON.stringify(data, null, 2);
+                            const filename = `ledgerpro_backup_${formatDate(new Date())}.json`;
+                            await saveFileLocally(filename, json, 'application/json');
+                        }}
                         className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all shadow-sm"
                       >
-                        {Capacitor.isNativePlatform() ? <Share2 size={14} className="text-blue-500" /> : <Download size={14} className="text-blue-500" />}
-                        <span className="text-[7px] font-black uppercase">{Capacitor.isNativePlatform() ? 'Share' : 'Export'}</span>
+                        <Download size={14} className="text-blue-500" />
+                        <span className="text-[7px] font-black uppercase">Save</span>
+                      </button>
+                      <button
+                        onClick={async () => {
+                            const json = JSON.stringify(data, null, 2);
+                            const filename = `ledgerpro_backup_${formatDate(new Date())}.json`;
+                            await shareFile(filename, json);
+                        }}
+                        className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all shadow-sm"
+                      >
+                        <Share2 size={14} className="text-teal-500" />
+                        <span className="text-[7px] font-black uppercase">Share</span>
                       </button>
                       <label className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all cursor-pointer shadow-sm">
                         <Upload size={14} className="text-purple-500" />
@@ -3469,11 +3705,34 @@ export default function App() {
             <h2 className="text-lg font-bold text-[var(--text-bright)]">Financial Summary</h2>
             <div className="flex items-center gap-1.5">
               <button 
-                onClick={handleExportBS}
-                className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-colors"
-                title={Capacitor.isNativePlatform() ? "Share / Save PDF" : "Export PDF"}
+                onClick={() => handleExportBS()}
+                className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-all shadow-sm"
+                title="Download Summary"
               >
-                {Capacitor.isNativePlatform() ? <Share2 size={18} /> : <FileDown size={18} />}
+                <Download size={18} />
+              </button>
+              <button
+                onClick={() => {
+                  const rows: any[][] = [];
+                  const addSection = (title: string, accounts: Account[], total: number) => {
+                    rows.push([{ content: title, colSpan: 2, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }]);
+                    accounts.forEach(a => rows.push([a.name, formatCurrency(getAccountBalance(a, activeRange.end, activeRange.start))]));
+                    rows.push([{ content: `Total ${title}`, styles: { fontStyle: 'bold' } }, { content: formatCurrency(total), styles: { fontStyle: 'bold' } }]);
+                  };
+                  addSection('ASSETS', assets, totalAssets);
+                  addSection('LIABILITIES', liabilities, totalLiabilities);
+                  addSection('EQUITY', equity, totalEquity);
+                  rows.push([{ content: 'Net Income (for period)', styles: { fontStyle: 'bold' } }, { content: formatCurrency(netIncome), styles: { fontStyle: 'bold' } }]);
+                  rows.push([
+                    { content: 'TOTAL LIABILITIES & EQUITY', styles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' } },
+                    { content: formatCurrency(totalLiabilities + totalEquity + netIncome), styles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' } }
+                  ]);
+                  exportToPDF(`Balance Sheet: ${activeCompany.name}`, ["Account", "Balance"], rows, undefined, 'share');
+                }}
+                className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-all shadow-sm"
+                title="Share Summary"
+              >
+                <Share2 size={18} />
               </button>
               <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
             </div>
