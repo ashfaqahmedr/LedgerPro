@@ -72,6 +72,36 @@ import {
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { StatusBar, Style as StatusBarStyle } from '@capacitor/status-bar';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { App as CapApp } from '@capacitor/app';
+import { Keyboard } from '@capacitor/keyboard';
+
+// --- Native helpers ---
+const hapticImpact = (style: ImpactStyle = ImpactStyle.Medium) => {
+  if (Capacitor.isNativePlatform()) {
+    Haptics.impact({ style }).catch(() => {});
+  }
+};
+
+const hapticSuccess = () => {
+  if (Capacitor.isNativePlatform()) {
+    Haptics.notification({ type: NotificationType.Success }).catch(() => {});
+  }
+};
+
+const hapticError = () => {
+  if (Capacitor.isNativePlatform()) {
+    Haptics.notification({ type: NotificationType.Error }).catch(() => {});
+  }
+};
+
+const hapticWarning = () => {
+  if (Capacitor.isNativePlatform()) {
+    Haptics.notification({ type: NotificationType.Warning }).catch(() => {});
+  }
+};
 
 // --- Types ---
 type AccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
@@ -444,12 +474,15 @@ const LockScreen = ({ company, onUnlock, onBack }: { company: Company, onUnlock:
 
   const handleKeypad = (val: string) => {
     if (pin.length < 4) {
+      hapticImpact(ImpactStyle.Light);
       const newPin = pin + val;
       setPin(newPin);
       if (newPin.length === 4) {
         if (newPin === company.pin) {
+          hapticSuccess();
           onUnlock(newPin);
         } else {
+          hapticError();
           setError(true);
           setTimeout(() => { setPin(""); setError(false); }, 500);
         }
@@ -487,7 +520,8 @@ const LockScreen = ({ company, onUnlock, onBack }: { company: Company, onUnlock:
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "C"].map((key, i) => (
             <button
                key={i}
-               onClick={() => {
+             onClick={() => {
+                 hapticImpact(ImpactStyle.Light);
                  if (key === "C") setPin("");
                  else if (key) handleKeypad(key);
                }}
@@ -1396,6 +1430,74 @@ export default function App() {
     });
   }, []);
 
+  // ── Native Android setup ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    // Configure status bar: transparent, white icons (dark-mode app)
+    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+    StatusBar.setStyle({ style: StatusBarStyle.Dark }).catch(() => {});
+    StatusBar.setBackgroundColor({ color: '#00000000' }).catch(() => {});
+
+    // Hide splash screen once app is fully ready
+    SplashScreen.hide({ fadeOutDuration: 300 }).catch(() => {});
+
+    // Keyboard: push content up (not overlay) and adjust viewport
+    Keyboard.setAccessoryBarVisible({ isVisible: false }).catch(() => {});
+    Keyboard.setScroll({ isDisabled: false }).catch(() => {});
+
+    // Clean up listeners on unmount
+    return () => {};
+  }, []);
+
+  // ── Android back button ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const backHandler = CapApp.addListener('backButton', ({ canGoBack }) => {
+      hapticImpact(ImpactStyle.Light);
+
+      // If a modal is open, close it
+      if (showModal) {
+        setShowModal(null);
+        return;
+      }
+
+      // Navigate back through views
+      if (view === 'journal') {
+        setView('accounts');
+        return;
+      }
+      if (view === 'accounts' || view === 'dashboard' || view === 'balanceSheet') {
+        setView('dashboard');
+        if (view === 'dashboard') {
+          // Already on dashboard — go to companies list
+          setSelectedCompanyId(null);
+          setIsUnlocked(false);
+          setView('companies');
+          localStorage.removeItem(ACTIVE_COMPANY_KEY);
+        }
+        return;
+      }
+
+      // On companies view: exit the app
+      if (view === 'companies') {
+        CapApp.exitApp();
+      }
+    });
+
+    return () => {
+      backHandler.then(h => h.remove());
+    };
+  }, [view, showModal]);
+
+  // ── Status bar color follows theme ───────────────────────────────────────
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const style = theme === 'dark' ? StatusBarStyle.Dark : StatusBarStyle.Light;
+    StatusBar.setStyle({ style }).catch(() => {});
+  }, [theme]);
+
   // Sync Data
   useEffect(() => {
     if (isLoaded) saveAppData(data);
@@ -1412,6 +1514,9 @@ export default function App() {
   const notify = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
+    // Native haptic feedback on notifications
+    if (type === 'success') hapticSuccess();
+    else hapticError();
   };
 
   const getNextId = useCallback(() => {
