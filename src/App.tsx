@@ -46,7 +46,8 @@ import {
   Briefcase,
   DollarSign,
   TrendingDown,
-  Activity
+  Activity,
+  Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import jsPDF from 'jspdf';
@@ -68,6 +69,9 @@ import {
   Bar,
   Legend
 } from 'recharts';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 // --- Types ---
 type AccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
@@ -216,23 +220,23 @@ const Modal = ({ title, children, onConfirm, confirmText = "Confirm", onClose, d
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 overflow-hidden"
+    className="fixed inset-0 z-[100] flex justify-center bg-black/70 backdrop-blur-sm overflow-hidden"
   >
     <motion.div 
       key={`modal-content-${title}`}
       initial={{ scale: 0.98, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.98, opacity: 0 }}
-      className={`w-screen h-screen bg-[var(--card)] overflow-hidden shadow-2xl border border-[var(--border)] flex flex-col relative ${className || ""}`}
+      className={`w-full max-w-2xl h-full bg-[var(--card)] overflow-hidden shadow-2xl border-x border-[var(--border)] flex flex-col relative ${className || ""}`}
     >
       {/* Header — pushed below the system status bar */}
       <div
-        className="px-2 border-b border-[var(--border)] flex justify-between items-center shrink-0 min-h-[24px]"
-        style={{ paddingTop: 'calc(var(--sat) + 0.125rem)', paddingBottom: '0.125rem' }}
+        className="px-5 border-b border-[var(--border)] flex justify-between items-center shrink-0 min-h-[56px] bg-[var(--card)]"
+        style={{ paddingTop: 'calc(var(--sat) + 0.5rem)', paddingBottom: '0.5rem' }}
       >
-        <h3 className="text-[10px] font-bold text-[var(--text-bright)]">{title}</h3>
-        <button onClick={onClose} className="p-0.5 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--text)]">
-          <X size={12} />
+        <h3 className="text-base font-bold text-[var(--text-bright)] tracking-tight">{title}</h3>
+        <button onClick={onClose} className="p-2 hover:bg-[var(--surface)] rounded-full transition-colors text-[var(--muted)] hover:text-[var(--text-bright)]">
+          <X size={20} />
         </button>
       </div>
       <div className={`p-3 space-y-3 overflow-y-auto native-scroll flex-1 ${bodyClassName || ""}`}>
@@ -601,7 +605,7 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
   };
 
   return (
-    <div className="pt-1 pb-20 px-4 max-w-4xl mx-auto space-y-6 animate-slide-up">
+    <div className="pt-1 pb-20 px-4 space-y-6 animate-slide-up">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
            <h2 className="text-xl font-bold text-[var(--text-bright)] tracking-tight">Finance Center</h2>
@@ -611,8 +615,10 @@ const FinancialReports = ({ activeCompany, rangeType, setRangeType, customRange,
           <button 
             onClick={handleExportReport}
             className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
+            title="Export and Share"
           >
-            <Download size={14} /> Download
+            {Capacitor.isNativePlatform() ? <Share2 size={14} /> : <Download size={14} />}
+            {Capacitor.isNativePlatform() ? 'Share / Save' : 'Download'}
           </button>
           <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
         </div>
@@ -1797,7 +1803,46 @@ export default function App() {
     }).reverse();
   }, []);
 
-  const exportToPDF = useCallback((title: string, headers: string[], rows: any[][], summary?: { label: string, value: string }[]) => {
+  const saveAndShareFile = async (filename: string, content: string, mimeType: string, isBase64: boolean = false) => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // For PDF, jsPDF output('datauristring') includes the prefix "data:application/pdf;filename=generated.pdf;base64,"
+        // Filesystem.writeFile 'data' should be just the base64 part if we don't specify encoding,
+        // OR we can pass the whole thing if it's a data URI? Actually it's better to pass just the base64.
+        let cleanContent = content;
+        if (isBase64 && content.includes('base64,')) {
+          cleanContent = content.split('base64,')[1];
+        }
+
+        const result = await Filesystem.writeFile({
+          path: filename,
+          data: cleanContent,
+          directory: Directory.Cache,
+          encoding: isBase64 ? undefined : Encoding.UTF8
+        });
+
+        await Share.share({
+          title: filename,
+          url: result.uri,
+        });
+      } catch (err) {
+        console.error('Error sharing file:', err);
+        notify("Action failed", "error");
+      }
+    } else {
+      const blob = isBase64
+        ? await (await fetch(content)).blob()
+        : new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const exportToPDF = useCallback(async (title: string, headers: string[], rows: any[][], summary?: { label: string, value: string }[]) => {
     const doc = new jsPDF();
     const period = rangeType === 'all' ? 'All Time' : `${activeRange.start} to ${activeRange.end}`;
     const margin = 10;
@@ -1875,12 +1920,18 @@ export default function App() {
       doc.putTotalPages(totalPagesExp);
     }
 
-    doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
+    const filename = `${title.replace(/\s+/g, '_')}.pdf`;
+    if (Capacitor.isNativePlatform()) {
+      const pdfBase64 = doc.output('datauristring');
+      await saveAndShareFile(filename, pdfBase64, 'application/pdf', true);
+    } else {
+      doc.save(filename);
+    }
   }, [activeCompany, activeRange, rangeType]);
 
   // --- Views ---
   const renderCompanies = () => (
-    <div className="space-y-4 pt-1 pb-20 px-4 max-w-2xl mx-auto animate-slide-up">
+    <div className="space-y-4 pt-1 pb-20 px-4 animate-slide-up">
       <div className="flex justify-between items-end mb-4">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] uppercase tracking-widest text-[var(--muted)] font-bold">Workspace</span>
@@ -2095,15 +2146,63 @@ export default function App() {
         return dashboardSort === 'desc' ? (timeB - timeA || b.id - a.id) : (timeA - timeB || a.id - b.id);
       });
 
+    const handleExportDashboard = () => {
+      const allTx: any[] = [];
+      activeCompany.accounts.forEach(acc => {
+        acc.entries
+          .filter(e => e.date >= activeRange.start && e.date <= activeRange.end)
+          .forEach(e => {
+            const contra = activeCompany.accounts.find(a => a.id === e.contraAccountId);
+            allTx.push([
+              e.date,
+              `${acc.code} - ${acc.name}`,
+              e.description || '-',
+              contra ? contra.name : 'External',
+              e.reference || '-',
+              e.type === 'debit'  ? formatCurrency(e.amount) : '-',
+              e.type === 'credit' ? formatCurrency(e.amount) : '-',
+            ]);
+          });
+      });
+      allTx.sort((a, b) => a[0].localeCompare(b[0]));
+
+      const totalDr = activeCompany.accounts.reduce((sum, a) =>
+        sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'debit').reduce((s, e) => s + e.amount, 0), 0);
+      const totalCr = activeCompany.accounts.reduce((sum, a) =>
+        sum + a.entries.filter(e => e.date >= activeRange.start && e.date <= activeRange.end && e.type === 'credit').reduce((s, e) => s + e.amount, 0), 0);
+      const closing = activeCompany.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0);
+
+      exportToPDF(
+        `Transaction Register`,
+        ['Date', 'Account', 'Description', 'Contra', 'Ref', 'Debit', 'Credit'],
+        allTx,
+        [
+          { label: 'Total Debits',  value: formatCurrency(totalDr) },
+          { label: 'Total Credits', value: formatCurrency(totalCr) },
+          { label: 'Closing Balance', value: formatCurrency(closing) },
+        ]
+      );
+    };
+
     return (
-      <div className="pt-1 pb-20 px-4 max-w-2xl mx-auto space-y-3 animate-slide-up">
+      <div className="pt-1 pb-20 px-4 space-y-3 animate-slide-up">
         {pinAlert}
         <div className="flex justify-between items-start mb-2">
           <div className="flex flex-col gap-0.1">
               <span className="text-[8px] tracking-wider text-[var(--muted)] font-black">Overview</span>
              <h2 className="text-lg font-bold text-[var(--text-bright)]">{activeCompany.name}</h2>
           </div>
-          <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportDashboard}
+              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all"
+              title={Capacitor.isNativePlatform() ? 'Share Transaction Register' : 'Download Transaction Register'}
+            >
+              {Capacitor.isNativePlatform() ? <Share2 size={14} /> : <Download size={14} />}
+              {Capacitor.isNativePlatform() ? 'Share / Save' : 'Download'}
+            </button>
+            <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -2137,31 +2236,31 @@ export default function App() {
         <div className="space-y-2.5 mt-4">
         <div className="flex items-center gap-2 mt-4 px-1">
           <div className="flex-1 relative group">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--muted)] transition-colors group-focus-within:text-blue-500" size={10} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)] transition-colors group-focus-within:text-blue-500" size={14} />
             <input 
               type="text" 
               placeholder="Search description, account or amount..." 
               value={dashboardSearch}
               onChange={e => setDashboardSearch(e.target.value)}
-              className="bg-[var(--surface)] border border-[var(--border)] rounded-lg py-1.5 pl-7 pr-8 text-[9px] font-bold outline-none focus:border-blue-500/50 w-full transition-all placeholder:text-[var(--muted)]/50 h-7"
+              className="bg-[var(--surface)] border border-[var(--border)] rounded-xl py-2 pl-9 pr-9 text-xs font-bold outline-none focus:border-blue-500/50 w-full transition-all placeholder:text-[var(--muted)]/50 h-10"
             />
             {dashboardSearch && (
               <button 
                 onClick={() => setDashboardSearch("")}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-[var(--muted)] hover:text-red-400 transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-[var(--muted)] hover:text-red-400 transition-colors"
                 title="Clear Search"
               >
-                <X size={10} />
+                <X size={14} />
               </button>
             )}
           </div>
           
           <button 
             onClick={() => setDashboardSort(prev => prev === 'desc' ? 'asc' : 'desc')}
-            className="p-1 px-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[9px] font-bold text-[var(--muted)] uppercase flex items-center gap-1.5 hover:text-[var(--text-bright)] transition-colors h-7 shrink-0"
+            className="px-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-xs font-bold text-[var(--muted)] uppercase flex items-center gap-1.5 hover:text-[var(--text-bright)] transition-colors h-10 shrink-0"
             title="Toggle Sort Order"
           >
-            <ArrowUpDown size={10} />
+            <ArrowUpDown size={14} />
             <span className="hidden sm:inline">{dashboardSort === 'desc' ? 'Newest' : 'Oldest'}</span>
           </button>
         </div>
@@ -2236,7 +2335,7 @@ export default function App() {
     const companyClosing = activeCompany?.accounts.reduce((s, a) => s + getAccountBalance(a, activeRange.end), 0) || 0;
 
     return (
-      <div className="pt-1 pb-20 px-4 max-w-2xl mx-auto space-y-4 animate-slide-up">
+      <div className="pt-1 pb-20 px-4 space-y-4 animate-slide-up">
         <div className="flex flex-col gap-0.5 mb-2">
           <span className="text-[9px] tracking-wider text-[var(--muted)] font-black">Directory</span>
           <h2 className="text-2xl font-black text-[var(--text-bright)]">Chart of Accounts</h2>
@@ -2402,7 +2501,7 @@ export default function App() {
     });
 
     return (
-      <div className="pt-1 pb-20 px-4 max-w-4xl mx-auto space-y-4 animate-slide-up">
+      <div className="pt-1 pb-20 px-4 space-y-4 animate-slide-up">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -2425,9 +2524,9 @@ export default function App() {
               <button 
                 onClick={handleExportJournal}
                 className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-colors"
-                title="Export PDF"
+                title={Capacitor.isNativePlatform() ? "Share / Save PDF" : "Export PDF"}
               >
-                <FileDown size={18} />
+                {Capacitor.isNativePlatform() ? <Share2 size={18} /> : <FileDown size={18} />}
               </button>
               <button 
                 onClick={openNewEntryModal}
@@ -2924,8 +3023,8 @@ export default function App() {
                         onClick={exportData}
                         className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all shadow-sm"
                       >
-                        <Download size={14} className="text-blue-500" />
-                        <span className="text-[7px] font-black uppercase">Export</span>
+                        {Capacitor.isNativePlatform() ? <Share2 size={14} className="text-blue-500" /> : <Download size={14} className="text-blue-500" />}
+                        <span className="text-[7px] font-black uppercase">{Capacitor.isNativePlatform() ? 'Share' : 'Export'}</span>
                       </button>
                       <label className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg flex flex-col items-center gap-1 hover:bg-[var(--border)] transition-all cursor-pointer shadow-sm">
                         <Upload size={14} className="text-purple-500" />
@@ -3259,7 +3358,7 @@ export default function App() {
     };
 
     return (
-      <div className="pt-16 pb-20 px-4 max-w-2xl mx-auto space-y-4 animate-slide-up">
+      <div className="pt-16 pb-20 px-4 space-y-4 animate-slide-up">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-[var(--text-bright)]">Financial Summary</h2>
@@ -3267,9 +3366,9 @@ export default function App() {
               <button 
                 onClick={handleExportBS}
                 className="p-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--muted)] hover:text-blue-400 transition-colors"
-                title="Export PDF"
+                title={Capacitor.isNativePlatform() ? "Share / Save PDF" : "Export PDF"}
               >
-                <FileDown size={18} />
+                {Capacitor.isNativePlatform() ? <Share2 size={18} /> : <FileDown size={18} />}
               </button>
               <DateFilter range={rangeType} setRange={setRangeType} custom={customRange} setCustom={setCustomRange} />
             </div>
@@ -3346,15 +3445,10 @@ export default function App() {
     );
   };
 
-  const exportData = () => {
+  const exportData = async () => {
     const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ledgerpro_backup_${formatDate(new Date())}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const filename = `ledgerpro_backup_${formatDate(new Date())}.json`;
+    await saveAndShareFile(filename, json, 'application/json');
     notify("Export complete");
   };
 
@@ -3387,7 +3481,8 @@ export default function App() {
   if (!isLoaded) return <div className="h-screen flex items-center justify-center bg-[var(--bg)] font-black text-xl animate-pulse">LEDGERPRO</div>;
 
   return (
-    <div className="relative min-h-screen pb-20 native-scroll">
+    <div className="min-h-screen bg-black flex justify-center">
+    <div className="relative w-full max-w-2xl min-h-screen bg-[var(--bg)] pb-20 native-scroll">
       
       {/* PIN Lock Overlay */}
       {!isUnlocked && selectedCompanyId && activeCompany?.pin && (
@@ -3464,8 +3559,9 @@ export default function App() {
 
       {/* Mobile Navigation */}
       {activeCompany && isUnlocked && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] shadow-2xl pb-safe">
-          <div className="flex justify-around items-center h-16 px-4 max-w-lg mx-auto relative group gap-1">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
+          <div className="w-full max-w-2xl bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] shadow-2xl pb-safe">
+          <div className="flex justify-around items-center h-16 px-4 relative group gap-1">
              <button 
                onClick={() => setView('dashboard')} 
                className={`flex-1 py-1 px-1 rounded-xl flex flex-col items-center gap-0.5 transition-all outline-none select-none ${
@@ -3525,6 +3621,7 @@ export default function App() {
                 <span className="text-[8px] font-black uppercase tracking-tighter">Settings</span>
              </button>
           </div>
+          </div>
         </nav>
       )}
 
@@ -3545,6 +3642,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
     </div>
   );
 }
